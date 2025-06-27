@@ -32,7 +32,7 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
         
-        // Simple icon components to replace Lucide
+        // Simple icon components
         const Save = ({ size = 16 }) => (
             <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
@@ -58,7 +58,7 @@
           const [isExporting, setIsExporting] = useState(false);
           const [isClearing, setIsClearing] = useState(false);
 
-          // Debounced auto-save
+          // Auto-save functionality
           useEffect(() => {
             const timeoutId = setTimeout(() => {
               if (groupName || Object.keys(grades).length > 0 || Object.keys(comments).length > 0) {
@@ -71,7 +71,7 @@
             return () => clearTimeout(timeoutId);
           }, [groupName, grades, comments]);
 
-          // Load saved data on mount
+          // Load saved data
           useEffect(() => {
             const savedData = localStorage.getItem('demo-grading-data');
             if (savedData) {
@@ -124,16 +124,15 @@
                 exportDate: new Date().toISOString(),
                 totalPoints: getTotalPoints(),
                 
-                // Artifact Summary
                 artifactSummary: {
                   'Architecture & Cost Analysis': getTotal('ILO4'),
                   'Azure ML & Training': getTotal('ILO8') + getTotal('ILO9_4_A'),
                   'Code Quality & Documentation': getTotal('ILO9_3'),
                   'Data Pipelines': getTotal('ILO9_4_B'),
-                  'Frontend & Monitoring': getTotal('ILO10')
+                  'Frontend & Monitoring': getTotal('ILO10'),
+                  'Deployment & DevOps': getTotal('ILO9_5')
                 },
                 
-                // Detailed ILO Breakdown
                 iloBreakdown: {
                   'ILO 4': {
                     total: `${getTotal('ILO4')}/10`,
@@ -147,97 +146,74 @@
                       'Overall': comments['Diagrams_Overall'] || ''
                     }
                   },
-                  
                   'ILO 8': {
                     total: `${getTotal('ILO8')}/10`,
                     sections: {
                       'A: Training Job': `${(grades['ILO8_A_training'] || 0) + (grades['ILO8_A_model'] || 0)}/4`,
-                      '• Training Success': `${grades['ILO8_A_training'] || 0}/3`,
-                      '• Model Registration': `${grades['ILO8_A_model'] || 0}/1`,
-                      'B: Advanced Features': `${(grades['ILO8_B_pipeline'] || 0) + (grades['ILO8_B_mlflow'] || 0) + (grades['ILO8_B_scheduled'] || 0) + (grades['ILO8_B_retraining'] || 0)}/6`,
-                      '• Pipeline/Tuning': `${grades['ILO8_B_pipeline'] || 0}/3`,
-                      '• MLFlow Metrics': `${grades['ILO8_B_mlflow'] || 0}/1`,
-                      '• Scheduling': `${grades['ILO8_B_scheduled'] || 0}/1`,
-                      '• Auto-retraining': `${grades['ILO8_B_retraining'] || 0}/1`
+                      'B: Advanced Features': `${(grades['ILO8_B_pipeline'] || 0) + (grades['ILO8_B_mlflow'] || 0) + (grades['ILO8_B_scheduled'] || 0) + (grades['ILO8_B_retraining'] || 0)}/6`
                     },
                     comments: {
                       'Training Job': comments['ILO8_A_training'] || '',
                       'Model Registration': comments['ILO8_A_model'] || '',
-                      'Pipeline/Tuning': comments['ILO8_B_pipeline'] || '',
-                      'MLFlow Metrics': comments['ILO8_B_mlflow'] || '',
-                      'Scheduling': comments['ILO8_B_scheduled'] || '',
-                      'Auto-retraining': comments['ILO8_B_retraining'] || '',
                       'Overall': comments['AzureML_Overall'] || ''
                     }
                   },
-                  
                   'ILO 9.3': {
                     total: `${getTotal('ILO9_3')}/15`,
                     sections: {
                       'A: Code Quality': `${grades['ILO9_3_A'] || 0}/5`,
                       'B: Documentation': `${(grades['ILO9_3_B_docs'] || 0) + (grades['ILO9_3_B_readme'] || 0)}/5`,
-                      '• Published Docs': `${grades['ILO9_3_B_docs'] || 0}/4`,
-                      '• README': `${grades['ILO9_3_B_readme'] || 0}/1`,
                       'C: Testing': `${grades['ILO9_3_C'] || 0}/5`
                     },
                     comments: {
                       'Code Quality': comments['ILO9_3_A'] || '',
-                      'Published Docs': comments['ILO9_3_B_docs'] || '',
-                      'README': comments['ILO9_3_B_readme'] || '',
+                      'Documentation': comments['ILO9_3_B_docs'] || '',
                       'Testing': comments['ILO9_3_C'] || '',
                       'Overall': comments['Code_Overall'] || ''
                     }
                   },
-                  
                   'ILO 9.4': {
                     total: `${getTotal('ILO9_4')}/15`,
                     sections: {
                       'A: Data Storage': `${(grades['ILO9_4_A_raw'] || 0) + (grades['ILO9_4_A_processed'] || 0)}/5`,
-                      '• Raw Data': `${grades['ILO9_4_A_raw'] || 0}/2`,
-                      '• Processed Data': `${grades['ILO9_4_A_processed'] || 0}/3`,
-                      'B: Pipeline': `${(grades['ILO9_4_B_pipeline'] || 0) + (grades['ILO9_4_B_scheduled'] || 0)}/10`,
-                      '• Working Pipeline': `${grades['ILO9_4_B_pipeline'] || 0}/7`,
-                      '• Scheduling': `${grades['ILO9_4_B_scheduled'] || 0}/3`
+                      'B: Pipeline': `${(grades['ILO9_4_B_pipeline'] || 0) + (grades['ILO9_4_B_scheduled'] || 0)}/10`
                     },
                     comments: {
-                      'Raw Data Storage': comments['ILO9_4_A_raw'] || '',
-                      'Processed Data Assets': comments['ILO9_4_A_processed'] || '',
-                      'Pipeline Implementation': comments['ILO9_4_B_pipeline'] || '',
-                      'Pipeline Scheduling': comments['ILO9_4_B_scheduled'] || '',
+                      'Data Storage': comments['ILO9_4_A_raw'] || '',
+                      'Pipeline': comments['ILO9_4_B_pipeline'] || '',
                       'Overall': comments['Pipeline_Overall'] || ''
                     }
                   },
-                  
+                  'ILO 9.5': {
+                    total: `${getTotal('ILO9_5')}/15`,
+                    sections: {
+                      'A: Deployed Application': `${grades['ILO9_5_A'] || 0}/3`,
+                      'B: GitHub & DevOps': `${(grades['ILO9_5_B_branching'] || 0) + (grades['ILO9_5_B_cicd_testing'] || 0) + (grades['ILO9_5_B_cicd_build'] || 0)}/5`,
+                      'C: Model Integration': `${grades['ILO9_5_C'] || 0}/3`,
+                      'D: Retraining Pipeline': `${(grades['ILO9_5_D_feedback'] || 0) + (grades['ILO9_5_D_data'] || 0) + (grades['ILO9_5_D_trigger'] || 0) + (grades['ILO9_5_D_deploy'] || 0)}/6`
+                    },
+                    comments: {
+                      'Deployment': comments['ILO9_5_A'] || '',
+                      'DevOps': comments['ILO9_5_B_branching'] || '',
+                      'Model Integration': comments['ILO9_5_C'] || '',
+                      'Retraining': comments['ILO9_5_D_feedback'] || '',
+                      'Overall': comments['Deployment_Overall'] || ''
+                    }
+                  },
                   'ILO 10': {
                     total: `${getTotal('ILO10')}/10`,
                     sections: {
                       'A: Monitoring Dashboard': `${(grades['ILO10_A_latency'] || 0) + (grades['ILO10_A_confidence'] || 0)}/4`,
-                      '• Request Latency': `${grades['ILO10_A_latency'] || 0}/2`,
-                      '• Model Confidence': `${grades['ILO10_A_confidence'] || 0}/2`,
                       'B: Frontend Quality': `${grades['ILO10_B'] || 0}/6`
                     },
                     comments: {
-                      'Request Latency': comments['ILO10_A_latency'] || '',
-                      'Model Confidence': comments['ILO10_A_confidence'] || '',
-                      'Frontend Quality': comments['ILO10_B'] || '',
+                      'Monitoring': comments['ILO10_A_latency'] || '',
+                      'Frontend': comments['ILO10_B'] || '',
                       'Overall': comments['Frontend_Overall'] || ''
-                    }
-                  },
-                  
-                  'Other ILOs': {
-                    total: 'TBD',
-                    sections: {
-                      'ILO 1': 'Post-demo assessment',
-                      'ILO 2': 'Post-demo + demeanor', 
-                      'ILO 9.5': 'Criteria not specified'
-                    },
-                    comments: {
-                      'Other ILOs': comments['Other'] || ''
                     }
                   }
                 },
                 
-                // Raw data for reference
                 rawData: {
                   grades,
                   comments
@@ -259,11 +235,10 @@
               
               URL.revokeObjectURL(url);
               
-              console.log('Export successful for:', groupName.trim());
               alert(`✅ Grading data exported successfully for "${groupName.trim()}"!`);
             } catch (error) {
               console.error('Export failed:', error);
-              alert('❌ Export failed. Please try again or check the console for details.');
+              alert('❌ Export failed. Please try again.');
             } finally {
               setIsExporting(false);
             }
@@ -272,7 +247,7 @@
           const clearData = () => {
             setIsClearing(true);
             
-            const confirmed = window.confirm('⚠️ Are you sure you want to clear ALL grading data?\\n\\nThis will delete:\\n- Group name\\n- All grades\\n- All comments\\n- Auto-saved data\\n\\nThis action cannot be undone!');
+            const confirmed = window.confirm('⚠️ Are you sure you want to clear ALL grading data?\\n\\nThis action cannot be undone!');
             
             if (confirmed) {
               try {
@@ -281,7 +256,6 @@
                 setComments({});
                 localStorage.removeItem('demo-grading-data');
                 setLastSaved(null);
-                console.log('Data cleared successfully');
                 alert('✅ All grading data has been cleared successfully.');
               } catch (error) {
                 console.error('Clear failed:', error);
@@ -461,11 +435,6 @@
               borderLeftColor: '#3b82f6',
               color: '#1e40af'
             },
-            grayAlert: {
-              backgroundColor: '#f3f4f6',
-              borderLeftColor: '#6b7280',
-              color: '#374151'
-            },
             checkboxGroup: {
               marginBottom: '12px',
               padding: '12px',
@@ -541,44 +510,6 @@
               fontSize: '14px',
               color: '#6b7280',
               marginBottom: '8px'
-            },
-            summarySection: {
-              marginTop: '32px',
-              padding: '24px',
-              backgroundColor: '#f9fafb',
-              borderRadius: '8px'
-            },
-            summaryTitle: {
-              fontSize: '1.125rem',
-              fontWeight: '600',
-              marginBottom: '16px'
-            },
-            summaryGrid: {
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: '16px'
-            },
-            summaryItem: {
-              textAlign: 'center'
-            },
-            summaryLabel: {
-              fontSize: '14px',
-              color: '#6b7280'
-            },
-            summaryPoints: {
-              fontSize: '1.125rem',
-              fontWeight: '600'
-            },
-            summaryTotal: {
-              marginTop: '16px',
-              paddingTop: '16px',
-              borderTop: '1px solid #d1d5db',
-              textAlign: 'center'
-            },
-            totalPointsLarge: {
-              fontSize: '1.25rem',
-              fontWeight: 'bold',
-              color: '#2563eb'
             }
           };
 
@@ -601,10 +532,7 @@
                       min="0"
                       max={maxPoints}
                       value={currentValue}
-                      onChange={(e) => {
-                        e.preventDefault();
-                        updateGrade(section, subsection, parseInt(e.target.value) || 0);
-                      }}
+                      onChange={(e) => updateGrade(section, subsection, parseInt(e.target.value) || 0)}
                       style={styles.pointsInput}
                     />
                     <span style={styles.pointsLabel}>/ {maxPoints}</span>
@@ -618,7 +546,6 @@
             const [localValue, setLocalValue] = useState(comments[section] || '');
             const textareaRef = React.useRef(null);
             
-            // Update local value when comments state changes from outside (like loading data)
             useEffect(() => {
               if (comments[section] !== localValue && document.activeElement !== textareaRef.current) {
                 setLocalValue(comments[section] || '');
@@ -626,7 +553,6 @@
             }, [comments[section]]);
             
             const handleBlur = () => {
-              // Only update parent state when user leaves the textarea
               if (localValue !== (comments[section] || '')) {
                 updateComment(section, localValue);
               }
@@ -681,10 +607,16 @@
               ilos: 'ILO 10'
             },
             { 
+              id: 'Deployment', 
+              name: 'Deployment & DevOps',
+              maxPoints: 15,
+              ilos: 'ILO 9.5'
+            },
+            { 
               id: 'Other', 
               name: 'Other ILOs',
               maxPoints: 'TBD',
-              ilos: 'ILO 1, 2, 9.5'
+              ilos: 'ILO 1, 2'
             }
           ];
 
@@ -700,10 +632,7 @@
                       key="group-name-input"
                       type="text"
                       value={groupName}
-                      onChange={(e) => {
-                        e.preventDefault();
-                        setGroupName(e.target.value);
-                      }}
+                      onChange={(e) => setGroupName(e.target.value)}
                       placeholder="Enter group name..."
                       style={styles.groupNameInput}
                     />
@@ -772,7 +701,8 @@
                                    tab.id === 'AzureML' ? 'ILO8' :
                                    tab.id === 'Code' ? 'ILO9_3' :
                                    tab.id === 'Pipeline' ? 'ILO9_4' :
-                                   tab.id === 'Frontend' ? 'ILO10' : tab.id)}/{tab.maxPoints}
+                                   tab.id === 'Frontend' ? 'ILO10' :
+                                   tab.id === 'Deployment' ? 'ILO9_5' : tab.id)}/{tab.maxPoints}
                         </span>
                       )}
                     </button>
@@ -814,173 +744,165 @@
                     <h2 style={styles.sectionTitle}>Azure ML & Training</h2>
                     <p style={styles.iloList}>Covers: ILO 8, ILO 9.4 (Data Storage)</p>
                     
-                    <div>
-                      <h3 style={styles.subsectionTitle}>Training Job (4 Points)</h3>
-                      <div style={styles.checkboxGroup}>
-                        <div style={styles.checkboxHeader}>
-                          <div>
-                            <label style={styles.label}>Training job successfully run</label>
-                            <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>ILO 8</div>
-                          </div>
-                          <div style={styles.pointsContainer}>
-                            <span style={styles.pointsLabel}>Points:</span>
-                            <input
-                              type="number"
-                              min="0"
-                              max={3}
-                              value={grades['ILO8_A_training'] || 0}
-                              onChange={(e) => updateGrade('ILO8', 'A_training', parseInt(e.target.value) || 0)}
-                              style={styles.pointsInput}
-                            />
-                            <span style={styles.pointsLabel}>/ 3</span>
-                          </div>
+                    <h3 style={styles.subsectionTitle}>Training Job (4 Points)</h3>
+                    <div style={styles.checkboxGroup}>
+                      <div style={styles.checkboxHeader}>
+                        <div>
+                          <label style={styles.label}>Training job successfully run</label>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>ILO 8</div>
                         </div>
-                        <div style={{marginTop: '12px', paddingLeft: '8px', borderLeft: '3px solid #e5e7eb'}}>
-                          <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Scoring criteria:</div>
-                          <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
-                            <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                              <input 
-                                type="radio" 
-                                name="training_score" 
-                                value="3"
-                                checked={grades['ILO8_A_training'] === 3}
-                                onChange={(e) => updateGrade('ILO8', 'A_training', 3)}
-                                style={{marginTop: '2px'}}
-                              />
-                              <span style={{color: '#16a34a', fontWeight: '500'}}>3 points:</span>
-                              <span style={{color: '#374151'}}>Logs make sense, metrics are good, and MLFlow metrics are present</span>
-                            </label>
-                            <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                              <input 
-                                type="radio" 
-                                name="training_score" 
-                                value="2"
-                                checked={grades['ILO8_A_training'] === 2}
-                                onChange={(e) => updateGrade('ILO8', 'A_training', 2)}
-                                style={{marginTop: '2px'}}
-                              />
-                              <span style={{color: '#ca8a04', fontWeight: '500'}}>2 points:</span>
-                              <span style={{color: '#374151'}}>Performance metrics not very good, no MLFlow metrics, but everything runs successfully</span>
-                            </label>
-                            <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                              <input 
-                                type="radio" 
-                                name="training_score" 
-                                value="1"
-                                checked={grades['ILO8_A_training'] === 1}
-                                onChange={(e) => updateGrade('ILO8', 'A_training', 1)}
-                                style={{marginTop: '2px'}}
-                              />
-                              <span style={{color: '#dc2626', fontWeight: '500'}}>1 point:</span>
-                              <span style={{color: '#374151'}}>Some evidence of successful local training with good performance metrics</span>
-                            </label>
-                            <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                              <input 
-                                type="radio" 
-                                name="training_score" 
-                                value="0"
-                                checked={grades['ILO8_A_training'] === 0}
-                                onChange={(e) => updateGrade('ILO8', 'A_training', 0)}
-                                style={{marginTop: '2px'}}
-                              />
-                              <span style={{color: '#6b7280', fontWeight: '500'}}>0 points:</span>
-                              <span style={{color: '#374151'}}>No evidence of successful training</span>
-                            </label>
-                          </div>
+                        <div style={styles.pointsContainer}>
+                          <span style={styles.pointsLabel}>Points:</span>
+                          <input
+                            type="number"
+                            min="0"
+                            max={3}
+                            value={grades['ILO8_A_training'] || 0}
+                            onChange={(e) => updateGrade('ILO8', 'A_training', parseInt(e.target.value) || 0)}
+                            style={styles.pointsInput}
+                          />
+                          <span style={styles.pointsLabel}>/ 3</span>
                         </div>
                       </div>
-                      <CommentSection section="ILO8_A_training" placeholder="Comments on training job implementation..." />
-
-                      <div style={styles.checkboxGroup}>
-                        <div style={styles.checkboxHeader}>
-                          <div>
-                            <label style={styles.label}>Model registered in model store</label>
-                            <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>ILO 8</div>
-                          </div>
-                          <div style={styles.pointsContainer}>
-                            <span style={styles.pointsLabel}>Points:</span>
-                            <input
-                              type="number"
-                              min="0"
-                              max={1}
-                              value={grades['ILO8_A_model'] || 0}
-                              onChange={(e) => updateGrade('ILO8', 'A_model', parseInt(e.target.value) || 0)}
-                              style={styles.pointsInput}
+                      <div style={{marginTop: '12px', paddingLeft: '8px', borderLeft: '3px solid #e5e7eb'}}>
+                        <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Scoring criteria:</div>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="training_score" 
+                              checked={grades['ILO8_A_training'] === 3}
+                              onChange={() => updateGrade('ILO8', 'A_training', 3)}
+                              style={{marginTop: '2px'}}
                             />
-                            <span style={styles.pointsLabel}>/ 1</span>
-                          </div>
-                        </div>
-                        <div style={{marginTop: '12px', paddingLeft: '8px', borderLeft: '3px solid #e5e7eb'}}>
-                          <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
-                            <label style={{display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                              <input 
-                                type="checkbox" 
-                                checked={grades['ILO8_A_model'] === 1}
-                                onChange={(e) => updateGrade('ILO8', 'A_model', e.target.checked ? 1 : 0)}
-                              />
-                              <span style={{color: '#374151'}}>Model is registered in model store</span>
-                            </label>
-                          </div>
+                            <span style={{color: '#16a34a', fontWeight: '500'}}>3 points:</span>
+                            <span style={{color: '#374151'}}>Logs make sense, metrics are good, and MLFlow metrics are present</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="training_score" 
+                              checked={grades['ILO8_A_training'] === 2}
+                              onChange={() => updateGrade('ILO8', 'A_training', 2)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#ca8a04', fontWeight: '500'}}>2 points:</span>
+                            <span style={{color: '#374151'}}>Performance metrics not very good, no MLFlow metrics, but everything runs successfully</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="training_score" 
+                              checked={grades['ILO8_A_training'] === 1}
+                              onChange={() => updateGrade('ILO8', 'A_training', 1)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#dc2626', fontWeight: '500'}}>1 point:</span>
+                            <span style={{color: '#374151'}}>Some evidence of successful local training with good performance metrics</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="training_score" 
+                              checked={grades['ILO8_A_training'] === 0}
+                              onChange={() => updateGrade('ILO8', 'A_training', 0)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#6b7280', fontWeight: '500'}}>0 points:</span>
+                            <span style={{color: '#374151'}}>No evidence of successful training</span>
+                          </label>
                         </div>
                       </div>
-                      <CommentSection section="ILO8_A_model" placeholder="Comments on model registration..." />
-                      
-                      <h3 style={styles.subsectionTitle}>Advanced Features (6 Points)</h3>
-                      <CheckboxGroup
-                        section="ILO8"
-                        subsection="B_pipeline"
-                        maxPoints={3}
-                        label="Training pipelines with multiple components hyperparameter tuning"
-                        ilo="8"
-                      />
-                      <CommentSection section="ILO8_B_pipeline" placeholder="Comments on training pipelines..." />
-                      
-                      <CheckboxGroup
-                        section="ILO8"
-                        subsection="B_mlflow"
-                        maxPoints={1}
-                        label="ML Flow metrics with graphs"
-                        ilo="8"
-                      />
-                      <CommentSection section="ILO8_B_mlflow" placeholder="Comments on MLFlow implementation..." />
-                      
-                      <CheckboxGroup
-                        section="ILO8"
-                        subsection="B_scheduled"
-                        maxPoints={1}
-                        label="Pipeline is scheduled with Airflow or AML"
-                        ilo="8"
-                      />
-                      <CommentSection section="ILO8_B_scheduled" placeholder="Comments on pipeline scheduling..." />
-                      
-                      <CheckboxGroup
-                        section="ILO8"
-                        subsection="B_retraining"
-                        maxPoints={1}
-                        label="Automated retraining implemented"
-                        ilo="8"
-                      />
-                      <CommentSection section="ILO8_B_retraining" placeholder="Comments on automated retraining..." />
-                      
-                      <h3 style={styles.subsectionTitle}>Data Storage (5 Points)</h3>
-                      <CheckboxGroup
-                        section="ILO9_4"
-                        subsection="A_raw"
-                        maxPoints={2}
-                        label="Raw data in blob store uploaded using code"
-                        ilo="9.4"
-                      />
-                      <CommentSection section="ILO9_4_A_raw" placeholder="Comments on raw data storage..." />
-                      
-                      <CheckboxGroup
-                        section="ILO9_4"
-                        subsection="A_processed"
-                        maxPoints={3}
-                        label="Processed data stored as data assets with versions (train/test/validation)"
-                        ilo="9.4"
-                      />
-                      <CommentSection section="ILO9_4_A_processed" placeholder="Comments on processed data assets..." />
                     </div>
+                    <CommentSection section="ILO8_A_training" placeholder="Comments on training job implementation..." />
+
+                    <div style={styles.checkboxGroup}>
+                      <div style={styles.checkboxHeader}>
+                        <div>
+                          <label style={styles.label}>Model registered in model store</label>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>ILO 8</div>
+                        </div>
+                        <div style={styles.pointsContainer}>
+                          <span style={styles.pointsLabel}>Points:</span>
+                          <input
+                            type="number"
+                            min="0"
+                            max={1}
+                            value={grades['ILO8_A_model'] || 0}
+                            onChange={(e) => updateGrade('ILO8', 'A_model', parseInt(e.target.value) || 0)}
+                            style={styles.pointsInput}
+                          />
+                          <span style={styles.pointsLabel}>/ 1</span>
+                        </div>
+                      </div>
+                      <div style={{marginTop: '12px', paddingLeft: '8px', borderLeft: '3px solid #e5e7eb'}}>
+                        <label style={{display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                          <input 
+                            type="checkbox" 
+                            checked={grades['ILO8_A_model'] === 1}
+                            onChange={(e) => updateGrade('ILO8', 'A_model', e.target.checked ? 1 : 0)}
+                          />
+                          <span style={{color: '#374151'}}>Model is registered in model store</span>
+                        </label>
+                      </div>
+                    </div>
+                    <CommentSection section="ILO8_A_model" placeholder="Comments on model registration..." />
+                    
+                    <h3 style={styles.subsectionTitle}>Advanced Features (6 Points)</h3>
+                    <CheckboxGroup
+                      section="ILO8"
+                      subsection="B_pipeline"
+                      maxPoints={3}
+                      label="Training pipelines with multiple components hyperparameter tuning"
+                      ilo="8"
+                    />
+                    <CommentSection section="ILO8_B_pipeline" placeholder="Comments on training pipelines..." />
+                    
+                    <CheckboxGroup
+                      section="ILO8"
+                      subsection="B_mlflow"
+                      maxPoints={1}
+                      label="ML Flow metrics with graphs"
+                      ilo="8"
+                    />
+                    <CommentSection section="ILO8_B_mlflow" placeholder="Comments on MLFlow implementation..." />
+                    
+                    <CheckboxGroup
+                      section="ILO8"
+                      subsection="B_scheduled"
+                      maxPoints={1}
+                      label="Pipeline is scheduled with Airflow or AML"
+                      ilo="8"
+                    />
+                    <CommentSection section="ILO8_B_scheduled" placeholder="Comments on pipeline scheduling..." />
+                    
+                    <CheckboxGroup
+                      section="ILO8"
+                      subsection="B_retraining"
+                      maxPoints={1}
+                      label="Automated retraining implemented"
+                      ilo="8"
+                    />
+                    <CommentSection section="ILO8_B_retraining" placeholder="Comments on automated retraining..." />
+                    
+                    <h3 style={styles.subsectionTitle}>Data Storage (5 Points)</h3>
+                    <CheckboxGroup
+                      section="ILO9_4"
+                      subsection="A_raw"
+                      maxPoints={2}
+                      label="Raw data in blob store uploaded using code"
+                      ilo="9.4"
+                    />
+                    <CommentSection section="ILO9_4_A_raw" placeholder="Comments on raw data storage..." />
+                    
+                    <CheckboxGroup
+                      section="ILO9_4"
+                      subsection="A_processed"
+                      maxPoints={3}
+                      label="Processed data stored as data assets with versions (train/test/validation)"
+                      ilo="9.4"
+                    />
+                    <CommentSection section="ILO9_4_A_processed" placeholder="Comments on processed data assets..." />
                     
                     <CommentSection section="AzureML_Overall" placeholder="Overall comments on Azure ML implementation..." />
                   </div>
@@ -991,153 +913,145 @@
                     <h2 style={styles.sectionTitle}>Code Quality & Documentation</h2>
                     <p style={styles.iloList}>Covers: ILO 9.3</p>
                     
-                    <div>
-                      <h3 style={styles.subsectionTitle}>Code Quality (5 Points)</h3>
-                      <div style={styles.criteriaBox}>
-                        <p style={styles.criteriaText}>Check codebase for: Best practice, Modularity, Logging, Doc strings, PEP8 compliance, Pre-commits set up</p>
-                        <CheckboxGroup
-                          section="ILO9_3"
-                          subsection="A"
-                          maxPoints={5}
-                          label="Code Quality Assessment"
-                          ilo="9.3"
-                        />
-                      </div>
-                      <CommentSection section="ILO9_3_A" placeholder="Comments on code quality assessment..." />
-                      
-                      <h3 style={styles.subsectionTitle}>Documentation (5 Points)</h3>
-                      <div style={styles.checkboxGroup}>
-                        <div style={styles.checkboxHeader}>
-                          <div>
-                            <label style={styles.label}>Documentation published</label>
-                            <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>ILO 9.3</div>
-                          </div>
-                          <div style={styles.pointsContainer}>
-                            <span style={styles.pointsLabel}>Points:</span>
-                            <input
-                              type="number"
-                              min="0"
-                              max={4}
-                              value={grades['ILO9_3_B_docs'] || 0}
-                              onChange={(e) => updateGrade('ILO9_3', 'B_docs', parseInt(e.target.value) || 0)}
-                              style={styles.pointsInput}
-                            />
-                            <span style={styles.pointsLabel}>/ 4</span>
-                          </div>
-                        </div>
-                        <div style={{marginTop: '12px', paddingLeft: '8px', borderLeft: '3px solid #e5e7eb'}}>
-                          <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Documentation requirements:</div>
-                          <div style={{display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px'}}>
-                            <div style={{fontSize: '14px', color: '#374151', padding: '8px', backgroundColor: '#f9fafb', borderRadius: '4px'}}>
-                              • Clear and professional<br/>
-                              • Docs for all key functions<br/>
-                              • Usage and installation instructions with examples
-                            </div>
-                          </div>
-                          <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Scoring criteria:</div>
-                          <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
-                            <div style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px'}}>
-                              <span style={{color: '#16a34a', fontWeight: '500'}}>4 points:</span>
-                              <span style={{color: '#374151'}}>Documentation published on GitHub Pages (or other websites - not localhost)</span>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px'}}>
-                              <span style={{color: '#ca8a04', fontWeight: '500'}}>Max 1 point:</span>
-                              <span style={{color: '#374151'}}>Documentation shown locally (localhost)</span>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px'}}>
-                              <span style={{color: '#6b7280', fontWeight: '500'}}>0 points:</span>
-                              <span style={{color: '#374151'}}>No documentation or inadequate documentation</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <CommentSection section="ILO9_3_B_docs" placeholder="Comments on documentation quality and accessibility..." />
-
+                    <h3 style={styles.subsectionTitle}>Code Quality (5 Points)</h3>
+                    <div style={styles.criteriaBox}>
+                      <p style={styles.criteriaText}>Check codebase for: Best practice, Modularity, Logging, Doc strings, PEP8 compliance, Pre-commits set up</p>
                       <CheckboxGroup
                         section="ILO9_3"
-                        subsection="B_readme"
-                        maxPoints={1}
-                        label="README.md in GitHub repo (clear, professional, with usage instructions)"
+                        subsection="A"
+                        maxPoints={5}
+                        label="Code Quality Assessment"
                         ilo="9.3"
                       />
-                      <CommentSection section="ILO9_3_B_readme" placeholder="Comments on README quality..." />
-                      
-                      <h3 style={styles.subsectionTitle}>Testing (5 Points)</h3>
-                      <div style={styles.checkboxGroup}>
-                        <div style={styles.checkboxHeader}>
-                          <div>
-                            <label style={styles.label}>Unit Tests & Coverage Report</label>
-                            <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>ILO 9.3</div>
-                          </div>
-                          <div style={styles.pointsContainer}>
-                            <span style={styles.pointsLabel}>Points:</span>
-                            <input
-                              type="number"
-                              min="0"
-                              max={5}
-                              value={grades['ILO9_3_C'] || 0}
-                              onChange={(e) => updateGrade('ILO9_3', 'C', parseInt(e.target.value) || 0)}
-                              style={styles.pointsInput}
-                            />
-                            <span style={styles.pointsLabel}>/ 5</span>
-                          </div>
+                    </div>
+                    <CommentSection section="ILO9_3_A" placeholder="Comments on code quality assessment..." />
+                    
+                    <h3 style={styles.subsectionTitle}>Documentation (5 Points)</h3>
+                    <div style={styles.checkboxGroup}>
+                      <div style={styles.checkboxHeader}>
+                        <div>
+                          <label style={styles.label}>Documentation published</label>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>ILO 9.3</div>
                         </div>
-                        <div style={{marginTop: '12px', paddingLeft: '8px', borderLeft: '3px solid #e5e7eb'}}>
-                          <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Scoring criteria:</div>
-                          <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
-                            <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                              <input 
-                                type="radio" 
-                                name="coverage_score" 
-                                value="5"
-                                checked={grades['ILO9_3_C'] === 5}
-                                onChange={(e) => updateGrade('ILO9_3', 'C', 5)}
-                                style={{marginTop: '2px'}}
-                              />
-                              <span style={{color: '#16a34a', fontWeight: '500'}}>5 points:</span>
-                              <span style={{color: '#374151'}}>Coverage report with 85% coverage or higher</span>
-                            </label>
-                            <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                              <input 
-                                type="radio" 
-                                name="coverage_score" 
-                                value="3"
-                                checked={grades['ILO9_3_C'] === 3}
-                                onChange={(e) => updateGrade('ILO9_3', 'C', 3)}
-                                style={{marginTop: '2px'}}
-                              />
-                              <span style={{color: '#ca8a04', fontWeight: '500'}}>3 points:</span>
-                              <span style={{color: '#374151'}}>Coverage of 65% or higher</span>
-                            </label>
-                            <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                              <input 
-                                type="radio" 
-                                name="coverage_score" 
-                                value="1"
-                                checked={grades['ILO9_3_C'] === 1}
-                                onChange={(e) => updateGrade('ILO9_3', 'C', 1)}
-                                style={{marginTop: '2px'}}
-                              />
-                              <span style={{color: '#dc2626', fontWeight: '500'}}>1 point:</span>
-                              <span style={{color: '#374151'}}>Less than 50% coverage</span>
-                            </label>
-                            <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                              <input 
-                                type="radio" 
-                                name="coverage_score" 
-                                value="0"
-                                checked={grades['ILO9_3_C'] === 0}
-                                onChange={(e) => updateGrade('ILO9_3', 'C', 0)}
-                                style={{marginTop: '2px'}}
-                              />
-                              <span style={{color: '#6b7280', fontWeight: '500'}}>0 points:</span>
-                              <span style={{color: '#374151'}}>No working tests</span>
-                            </label>
+                        <div style={styles.pointsContainer}>
+                          <span style={styles.pointsLabel}>Points:</span>
+                          <input
+                            type="number"
+                            min="0"
+                            max={4}
+                            value={grades['ILO9_3_B_docs'] || 0}
+                            onChange={(e) => updateGrade('ILO9_3', 'B_docs', parseInt(e.target.value) || 0)}
+                            style={styles.pointsInput}
+                          />
+                          <span style={styles.pointsLabel}>/ 4</span>
+                        </div>
+                      </div>
+                      <div style={{marginTop: '12px', paddingLeft: '8px', borderLeft: '3px solid #e5e7eb'}}>
+                        <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Documentation requirements:</div>
+                        <div style={{fontSize: '14px', color: '#374151', padding: '8px', backgroundColor: '#f9fafb', borderRadius: '4px', marginBottom: '12px'}}>
+                          • Clear and professional<br/>
+                          • Docs for all key functions<br/>
+                          • Usage and installation instructions with examples
+                        </div>
+                        <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Scoring criteria:</div>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
+                          <div style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px'}}>
+                            <span style={{color: '#16a34a', fontWeight: '500'}}>4 points:</span>
+                            <span style={{color: '#374151'}}>Documentation published on GitHub Pages (or other websites - not localhost)</span>
+                          </div>
+                          <div style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px'}}>
+                            <span style={{color: '#ca8a04', fontWeight: '500'}}>Max 1 point:</span>
+                            <span style={{color: '#374151'}}>Documentation shown locally (localhost)</span>
+                          </div>
+                          <div style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px'}}>
+                            <span style={{color: '#6b7280', fontWeight: '500'}}>0 points:</span>
+                            <span style={{color: '#374151'}}>No documentation or inadequate documentation</span>
                           </div>
                         </div>
                       </div>
-                      <CommentSection section="ILO9_3_C" placeholder="Comments on testing coverage and quality..." />
                     </div>
+                    <CommentSection section="ILO9_3_B_docs" placeholder="Comments on documentation quality and accessibility..." />
+
+                    <CheckboxGroup
+                      section="ILO9_3"
+                      subsection="B_readme"
+                      maxPoints={1}
+                      label="README.md in GitHub repo (clear, professional, with usage instructions)"
+                      ilo="9.3"
+                    />
+                    <CommentSection section="ILO9_3_B_readme" placeholder="Comments on README quality..." />
+                    
+                    <h3 style={styles.subsectionTitle}>Testing (5 Points)</h3>
+                    <div style={styles.checkboxGroup}>
+                      <div style={styles.checkboxHeader}>
+                        <div>
+                          <label style={styles.label}>Unit Tests & Coverage Report</label>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>ILO 9.3</div>
+                        </div>
+                        <div style={styles.pointsContainer}>
+                          <span style={styles.pointsLabel}>Points:</span>
+                          <input
+                            type="number"
+                            min="0"
+                            max={5}
+                            value={grades['ILO9_3_C'] || 0}
+                            onChange={(e) => updateGrade('ILO9_3', 'C', parseInt(e.target.value) || 0)}
+                            style={styles.pointsInput}
+                          />
+                          <span style={styles.pointsLabel}>/ 5</span>
+                        </div>
+                      </div>
+                      <div style={{marginTop: '12px', paddingLeft: '8px', borderLeft: '3px solid #e5e7eb'}}>
+                        <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Scoring criteria:</div>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="coverage_score" 
+                              checked={grades['ILO9_3_C'] === 5}
+                              onChange={() => updateGrade('ILO9_3', 'C', 5)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#16a34a', fontWeight: '500'}}>5 points:</span>
+                            <span style={{color: '#374151'}}>Coverage report with 85% coverage or higher</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="coverage_score" 
+                              checked={grades['ILO9_3_C'] === 3}
+                              onChange={() => updateGrade('ILO9_3', 'C', 3)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#ca8a04', fontWeight: '500'}}>3 points:</span>
+                            <span style={{color: '#374151'}}>Coverage of 65% or higher</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="coverage_score" 
+                              checked={grades['ILO9_3_C'] === 1}
+                              onChange={() => updateGrade('ILO9_3', 'C', 1)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#dc2626', fontWeight: '500'}}>1 point:</span>
+                            <span style={{color: '#374151'}}>Less than 50% coverage</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="coverage_score" 
+                              checked={grades['ILO9_3_C'] === 0}
+                              onChange={() => updateGrade('ILO9_3', 'C', 0)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#6b7280', fontWeight: '500'}}>0 points:</span>
+                            <span style={{color: '#374151'}}>No working tests</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <CommentSection section="ILO9_3_C" placeholder="Comments on testing coverage and quality..." />
                     
                     <CommentSection section="Code_Overall" placeholder="Overall comments on code quality, documentation, and testing..." />
                   </div>
@@ -1148,93 +1062,86 @@
                     <h2 style={styles.sectionTitle}>Data Pipelines</h2>
                     <p style={styles.iloList}>Covers: ILO 9.4 (Pipeline Implementation)</p>
                     
-                    <div>
-                      <h3 style={styles.subsectionTitle}>Data Pipeline (10 Points)</h3>
-                      <div style={styles.checkboxGroup}>
-                        <div style={styles.checkboxHeader}>
-                          <div>
-                            <label style={styles.label}>Working Airflow/AML pipeline</label>
-                            <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>ILO 9.4</div>
-                          </div>
-                          <div style={styles.pointsContainer}>
-                            <span style={styles.pointsLabel}>Points:</span>
-                            <input
-                              type="number"
-                              min="0"
-                              max={7}
-                              value={grades['ILO9_4_B_pipeline'] || 0}
-                              onChange={(e) => updateGrade('ILO9_4', 'B_pipeline', parseInt(e.target.value) || 0)}
-                              style={styles.pointsInput}
-                            />
-                            <span style={styles.pointsLabel}>/ 7</span>
-                          </div>
+                    <h3 style={styles.subsectionTitle}>Data Pipeline (10 Points)</h3>
+                    <div style={styles.checkboxGroup}>
+                      <div style={styles.checkboxHeader}>
+                        <div>
+                          <label style={styles.label}>Working Airflow/AML pipeline</label>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>ILO 9.4</div>
                         </div>
-                        <div style={{marginTop: '12px', paddingLeft: '8px', borderLeft: '3px solid #e5e7eb'}}>
-                          <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Pipeline requirements:</div>
-                          <div style={{display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px'}}>
-                            <div style={{fontSize: '14px', color: '#374151', padding: '8px', backgroundColor: '#f9fafb', borderRadius: '4px'}}>
-                              • Look at Airflow DAGs (all dark green)<br/>
-                              • Check data assets that they should create<br/>
-                              • Functioning data pipeline that processes raw data and registers data assets<br/>
-                              • Students should explain data flow, processing, and final data format
-                            </div>
-                          </div>
-                          <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Scoring criteria:</div>
-                          <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
-                            <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                              <input 
-                                type="radio" 
-                                name="pipeline_score" 
-                                value="7"
-                                checked={grades['ILO9_4_B_pipeline'] === 7}
-                                onChange={(e) => updateGrade('ILO9_4', 'B_pipeline', 7)}
-                                style={{marginTop: '2px'}}
-                              />
-                              <span style={{color: '#16a34a', fontWeight: '500'}}>7 points:</span>
-                              <span style={{color: '#374151'}}>Working Airflow pipeline that downloads data and registers assets</span>
-                            </label>
-                            <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                              <input 
-                                type="radio" 
-                                name="pipeline_score" 
-                                value="4"
-                                checked={grades['ILO9_4_B_pipeline'] === 4}
-                                onChange={(e) => updateGrade('ILO9_4', 'B_pipeline', 4)}
-                                style={{marginTop: '2px'}}
-                              />
-                              <span style={{color: '#ca8a04', fontWeight: '500'}}>Max 4 points:</span>
-                              <span style={{color: '#374151'}}>No Airflow but working AML pipeline</span>
-                            </label>
-                            <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                              <input 
-                                type="radio" 
-                                name="pipeline_score" 
-                                value="0"
-                                checked={grades['ILO9_4_B_pipeline'] === 0}
-                                onChange={(e) => updateGrade('ILO9_4', 'B_pipeline', 0)}
-                                style={{marginTop: '2px'}}
-                              />
-                              <span style={{color: '#6b7280', fontWeight: '500'}}>0 points:</span>
-                              <span style={{color: '#374151'}}>No working pipeline</span>
-                            </label>
-                          </div>
+                        <div style={styles.pointsContainer}>
+                          <span style={styles.pointsLabel}>Points:</span>
+                          <input
+                            type="number"
+                            min="0"
+                            max={7}
+                            value={grades['ILO9_4_B_pipeline'] || 0}
+                            onChange={(e) => updateGrade('ILO9_4', 'B_pipeline', parseInt(e.target.value) || 0)}
+                            style={styles.pointsInput}
+                          />
+                          <span style={styles.pointsLabel}>/ 7</span>
                         </div>
                       </div>
-
-                      <CheckboxGroup
-                        section="ILO9_4"
-                        subsection="B_scheduled"
-                        maxPoints={3}
-                        label="Pipeline scheduled based on reasonable criteria"
-                        ilo="9.4"
-                      />
-                      
-                      <div style={{...styles.alert, ...styles.infoAlert}}>
-                        <p>Note: Should be on server, but running locally is acceptable due to some issues</p>
+                      <div style={{marginTop: '12px', paddingLeft: '8px', borderLeft: '3px solid #e5e7eb'}}>
+                        <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Pipeline requirements:</div>
+                        <div style={{fontSize: '14px', color: '#374151', padding: '8px', backgroundColor: '#f9fafb', borderRadius: '4px', marginBottom: '12px'}}>
+                          • Look at Airflow DAGs (all dark green)<br/>
+                          • Check data assets that they should create<br/>
+                          • Functioning data pipeline that processes raw data and registers data assets<br/>
+                          • Students should explain data flow, processing, and final data format
+                        </div>
+                        <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Scoring criteria:</div>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="pipeline_score" 
+                              checked={grades['ILO9_4_B_pipeline'] === 7}
+                              onChange={() => updateGrade('ILO9_4', 'B_pipeline', 7)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#16a34a', fontWeight: '500'}}>7 points:</span>
+                            <span style={{color: '#374151'}}>Working Airflow pipeline that downloads data and registers assets</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="pipeline_score" 
+                              checked={grades['ILO9_4_B_pipeline'] === 4}
+                              onChange={() => updateGrade('ILO9_4', 'B_pipeline', 4)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#ca8a04', fontWeight: '500'}}>Max 4 points:</span>
+                            <span style={{color: '#374151'}}>No Airflow but working AML pipeline</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="pipeline_score" 
+                              checked={grades['ILO9_4_B_pipeline'] === 0}
+                              onChange={() => updateGrade('ILO9_4', 'B_pipeline', 0)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#6b7280', fontWeight: '500'}}>0 points:</span>
+                            <span style={{color: '#374151'}}>No working pipeline</span>
+                          </label>
+                        </div>
                       </div>
                     </div>
+
+                    <CheckboxGroup
+                      section="ILO9_4"
+                      subsection="B_scheduled"
+                      maxPoints={3}
+                      label="Pipeline scheduled based on reasonable criteria"
+                      ilo="9.4"
+                    />
                     
-                    <CommentSection section="Pipeline" placeholder="Comments on data pipelines and processing..." />
+                    <div style={{...styles.alert, ...styles.infoAlert}}>
+                      <p>Note: Should be on server, but running locally is acceptable due to some issues</p>
+                    </div>
+                    
+                    <CommentSection section="Pipeline_Overall" placeholder="Comments on data pipelines and processing..." />
                   </div>
                 )}
 
@@ -1243,162 +1150,352 @@
                     <h2 style={styles.sectionTitle}>Frontend & Monitoring</h2>
                     <p style={styles.iloList}>Covers: ILO 10</p>
                     
-                    <div>
-                      <h3 style={styles.subsectionTitle}>Monitoring Dashboard (4 Points)</h3>
+                    <h3 style={styles.subsectionTitle}>Monitoring Dashboard (4 Points)</h3>
+                    <CheckboxGroup
+                      section="ILO10"
+                      subsection="A_latency"
+                      maxPoints={2}
+                      label="Request latency over time"
+                      ilo="10"
+                    />
+                    <CommentSection section="ILO10_A_latency" placeholder="Comments on request latency monitoring..." />
+                    
+                    <CheckboxGroup
+                      section="ILO10"
+                      subsection="A_confidence"
+                      maxPoints={2}
+                      label="Model confidence over time"
+                      ilo="10"
+                    />
+                    <CommentSection section="ILO10_A_confidence" placeholder="Comments on model confidence monitoring..." />
+                    
+                    <h3 style={styles.subsectionTitle}>Frontend Quality (6 Points)</h3>
+                    <div style={styles.criteriaBox}>
+                      <p style={styles.criteriaText}>Assess: Style, Functionality, Features, Visualizations (max 4pts if no visualizations)</p>
                       <CheckboxGroup
                         section="ILO10"
-                        subsection="A_latency"
-                        maxPoints={2}
-                        label="Request latency over time"
+                        subsection="B"
+                        maxPoints={6}
+                        label="Frontend Assessment (Style, Functionality, Features, Visualizations)"
                         ilo="10"
                       />
-                      <CheckboxGroup
-                        section="ILO10"
-                        subsection="A_confidence"
-                        maxPoints={2}
-                        label="Model confidence over time"
-                        ilo="10"
-                      />
-                      
-                      <h3 style={styles.subsectionTitle}>Frontend Quality (6 Points)</h3>
-                      <div style={styles.criteriaBox}>
-                        <p style={styles.criteriaText}>Assess: Style, Functionality, Features, Visualizations (max 4pts if no visualizations)</p>
-                        <CheckboxGroup
-                          section="ILO10"
-                          subsection="B"
-                          maxPoints={6}
-                          label="Frontend Assessment (Style, Functionality, Features, Visualizations)"
-                          ilo="10"
-                        />
+                    </div>
+                    <CommentSection section="ILO10_B" placeholder="Comments on frontend quality and features..." />
+                    
+                    <CommentSection section="Frontend_Overall" placeholder="Overall comments on monitoring dashboard and frontend..." />
+                  </div>
+                )}
+
+                {activeTab === 'Deployment' && (
+                  <div>
+                    <h2 style={styles.sectionTitle}>Deployment & DevOps</h2>
+                    <p style={styles.iloList}>Covers: ILO 9.5</p>
+                    
+                    <h3 style={styles.subsectionTitle}>A: Deployed Application (3 Points)</h3>
+                    <div style={styles.checkboxGroup}>
+                      <div style={styles.checkboxHeader}>
+                        <div>
+                          <label style={styles.label}>Application Deployment (On-prem [portainer] and cloud)</label>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>ILO 9.5</div>
+                        </div>
+                        <div style={styles.pointsContainer}>
+                          <span style={styles.pointsLabel}>Points:</span>
+                          <input
+                            type="number"
+                            min="0"
+                            max={3}
+                            value={grades['ILO9_5_A'] || 0}
+                            onChange={(e) => updateGrade('ILO9_5', 'A', parseInt(e.target.value) || 0)}
+                            style={styles.pointsInput}
+                          />
+                          <span style={styles.pointsLabel}>/ 3</span>
+                        </div>
+                      </div>
+                      <div style={{marginTop: '12px', paddingLeft: '8px', borderLeft: '3px solid #e5e7eb'}}>
+                        <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Scoring criteria:</div>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="deployment_score" 
+                              checked={grades['ILO9_5_A'] === 3}
+                              onChange={() => updateGrade('ILO9_5', 'A', 3)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#16a34a', fontWeight: '500'}}>3 points:</span>
+                            <span style={{color: '#374151'}}>Backend and frontend running on portainer and inference works</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="deployment_score" 
+                              checked={grades['ILO9_5_A'] === 2}
+                              onChange={() => updateGrade('ILO9_5', 'A', 2)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#ca8a04', fontWeight: '500'}}>2 points:</span>
+                            <span style={{color: '#374151'}}>Backend running on portainer with FastAPI docs and inference works</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="deployment_score" 
+                              checked={grades['ILO9_5_A'] === 1}
+                              onChange={() => updateGrade('ILO9_5', 'A', 1)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#dc2626', fontWeight: '500'}}>Max 1 point:</span>
+                            <span style={{color: '#374151'}}>Only running locally</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="deployment_score" 
+                              checked={grades['ILO9_5_A'] === 0}
+                              onChange={() => updateGrade('ILO9_5', 'A', 0)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#6b7280', fontWeight: '500'}}>0 points:</span>
+                            <span style={{color: '#374151'}}>No working deployment</span>
+                          </label>
+                        </div>
                       </div>
                     </div>
+                    <CommentSection section="ILO9_5_A" placeholder="Comments on application deployment..." />
                     
-                    <CommentSection section="Frontend" placeholder="Comments on monitoring dashboard and frontend..." />
+                    <h3 style={styles.subsectionTitle}>B: GitHub Repository & DevOps (5 Points)</h3>
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="B_branching"
+                      maxPoints={2}
+                      label="Branching Strategy (Main protected, merge by pull requests)"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_B_branching" placeholder="Comments on branching strategy and pull request workflow..." />
+                    
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="B_cicd_testing"
+                      maxPoints={2}
+                      label="CI/CD - Automated linting and unit testing"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_B_cicd_testing" placeholder="Comments on automated testing in CI/CD..." />
+                    
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="B_cicd_build"
+                      maxPoints={1}
+                      label="CI/CD - Automated container build and push"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_B_cicd_build" placeholder="Comments on automated container builds..." />
+                    
+                    <h3 style={styles.subsectionTitle}>C: Model Integration (3 Points)</h3>
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="C"
+                      maxPoints={3}
+                      label="Model from training pipeline stored in model store and used in application"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_C" placeholder="Comments on model integration from training to application..." />
+                    
+                    <h3 style={styles.subsectionTitle}>D: Retraining Pipeline (4 Points)</h3>
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="D_feedback"
+                      maxPoints={1}
+                      label="User feedback on predictions in place"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_D_feedback" placeholder="Comments on user feedback collection system..." />
+                    
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="D_data"
+                      maxPoints={1}
+                      label="Data stored in data store and processed with data pipeline"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_D_data" placeholder="Comments on data storage and pipeline integration..." />
+                    
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="D_trigger"
+                      maxPoints={1}
+                      label="New training jobs triggered to retrain on new data"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_D_trigger" placeholder="Comments on automatic training job triggers..." />
+                    
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="D_deploy"
+                      maxPoints={1}
+                      label="New models automatically deployed"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_D_deploy" placeholder="Comments on automatic model deployment..." />
+                    
+                    <CommentSection section="Deployment_Overall" placeholder="Overall comments on deployment and DevOps implementation..." />
                   </div>
                 )}
 
                 {activeTab === 'Other' && (
                   <div>
                     <h2 style={styles.sectionTitle}>Other ILOs</h2>
-                    <p style={styles.iloList}>Covers: ILO 1, ILO 2, ILO 9.5</p>
+                    <p style={styles.iloList}>Covers: ILO 1, ILO 2</p>
                     
                     <div style={{...styles.alert, ...styles.warningAlert}}>
                       <p><strong>ILO 1:</strong> Needs to be checked after demo day</p>
                     </div>
+                    <CommentSection section="ILO1" placeholder="Notes about ILO 1 assessment..." />
                     
                     <div style={{...styles.alert, ...styles.infoAlert}}>
                       <p><strong>ILO 2:</strong> Checked after demo day but emotional demeanour on demo day can be taken into account</p>
                     </div>
-                    
-                    <div style={{...styles.alert, ...styles.grayAlert}}>
-                      <p><strong>ILO 9.5:</strong> Grading criteria not specified in document</p>
-                    </div>
-                    
-                    <CommentSection section="Other" placeholder="Notes about ILO 1, ILO 2, and ILO 9.5 assessments..." />
+                    <CommentSection section="ILO2" placeholder="Notes about emotional demeanour and overall ILO 2 assessment..." />
                   </div>
                 )}
-              </div>
 
-              {/* Summary Section */}
-              <div style={styles.summarySection}>
-                <h3 style={styles.summaryTitle}>Grading Summary</h3>
-                
-                {/* Artifact Summary */}
-                <div style={styles.summaryGrid}>
-                  {tabs.filter(tab => typeof tab.maxPoints === 'number').map((tab) => (
-                    <div key={tab.id} style={styles.summaryItem}>
-                      <div style={styles.summaryLabel}>{tab.name}</div>
-                      <div style={styles.summaryPoints}>
-                        {getTotal(tab.id === 'Diagrams' ? 'ILO4' : 
-                                 tab.id === 'AzureML' ? 'ILO8' :
-                                 tab.id === 'Code' ? 'ILO9_3' :
-                                 tab.id === 'Pipeline' ? 'ILO9_4' :
-                                 tab.id === 'Frontend' ? 'ILO10' : tab.id)}/{tab.maxPoints}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                <div style={styles.summaryTotal}>
-                  <div style={styles.totalPointsLarge}>
-                    Total: {getTotalPoints()} points
-                  </div>
-                </div>
-
-                {/* ILO Breakdown */}
-                <div style={{marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #d1d5db'}}>
-                  <h4 style={{fontSize: '1.125rem', fontWeight: '600', marginBottom: '16px', color: '#1f2937'}}>
-                    ILO Breakdown
-                  </h4>
+                {/* Summary Section */}
+                <div style={{
+                  marginTop: '32px',
+                  padding: '24px',
+                  backgroundColor: '#f9fafb',
+                  borderRadius: '8px'
+                }}>
+                  <h3 style={{
+                    fontSize: '1.125rem',
+                    fontWeight: '600',
+                    marginBottom: '16px'
+                  }}>Grading Summary</h3>
                   
-                  <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px'}}>
-                    {/* ILO 4 */}
-                    <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
-                      <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>ILO 4 ({getTotal('ILO4')}/10)</div>
-                      <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
-                        A: Architecture Diagrams ({grades['ILO4_A'] || 0}/5)<br/>
-                        B: Cost Analysis ({grades['ILO4_B'] || 0}/5)
+                  {/* Artifact Summary */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                    gap: '16px'
+                  }}>
+                    {tabs.filter(tab => typeof tab.maxPoints === 'number').map((tab) => (
+                      <div key={tab.id} style={{textAlign: 'center'}}>
+                        <div style={{fontSize: '14px', color: '#6b7280'}}>{tab.name}</div>
+                        <div style={{fontSize: '1.125rem', fontWeight: '600'}}>
+                          {getTotal(tab.id === 'Diagrams' ? 'ILO4' : 
+                                   tab.id === 'AzureML' ? 'ILO8' :
+                                   tab.id === 'Code' ? 'ILO9_3' :
+                                   tab.id === 'Pipeline' ? 'ILO9_4' :
+                                   tab.id === 'Frontend' ? 'ILO10' :
+                                   tab.id === 'Deployment' ? 'ILO9_5' : tab.id)}/{tab.maxPoints}
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                  
+                  <div style={{
+                    marginTop: '16px',
+                    paddingTop: '16px',
+                    borderTop: '1px solid #d1d5db',
+                    textAlign: 'center'
+                  }}>
+                    <div style={{
+                      fontSize: '1.25rem',
+                      fontWeight: 'bold',
+                      color: '#2563eb'
+                    }}>
+                      Total: {getTotalPoints()} points
                     </div>
+                  </div>
 
-                    {/* ILO 8 */}
-                    <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
-                      <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>ILO 8 ({getTotal('ILO8')}/10)</div>
-                      <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
-                        A: Training Job ({(grades['ILO8_A_training'] || 0) + (grades['ILO8_A_model'] || 0)}/4)<br/>
-                        • Training Success ({grades['ILO8_A_training'] || 0}/3)<br/>
-                        • Model Registration ({grades['ILO8_A_model'] || 0}/1)<br/>
-                        B: Advanced Features ({(grades['ILO8_B_pipeline'] || 0) + (grades['ILO8_B_mlflow'] || 0) + (grades['ILO8_B_scheduled'] || 0) + (grades['ILO8_B_retraining'] || 0)}/6)<br/>
-                        • Pipeline/Tuning ({grades['ILO8_B_pipeline'] || 0}/3)<br/>
-                        • MLFlow Metrics ({grades['ILO8_B_mlflow'] || 0}/1)<br/>
-                        • Scheduling ({grades['ILO8_B_scheduled'] || 0}/1)<br/>
-                        • Auto-retraining ({grades['ILO8_B_retraining'] || 0}/1)
+                  {/* ILO Breakdown */}
+                  <div style={{marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #d1d5db'}}>
+                    <h4 style={{fontSize: '1.125rem', fontWeight: '600', marginBottom: '16px', color: '#1f2937'}}>
+                      ILO Breakdown
+                    </h4>
+                    
+                    <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px'}}>
+                      {/* ILO 4 */}
+                      <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
+                        <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>ILO 4 ({getTotal('ILO4')}/10)</div>
+                        <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
+                          A: Architecture Diagrams ({grades['ILO4_A'] || 0}/5)<br/>
+                          B: Cost Analysis ({grades['ILO4_B'] || 0}/5)
+                        </div>
                       </div>
-                    </div>
 
-                    {/* ILO 9.3 */}
-                    <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
-                      <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>ILO 9.3 ({getTotal('ILO9_3')}/15)</div>
-                      <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
-                        A: Code Quality ({grades['ILO9_3_A'] || 0}/5)<br/>
-                        B: Documentation ({(grades['ILO9_3_B_docs'] || 0) + (grades['ILO9_3_B_readme'] || 0)}/5)<br/>
-                        • Published Docs ({grades['ILO9_3_B_docs'] || 0}/4)<br/>
-                        • README ({grades['ILO9_3_B_readme'] || 0}/1)<br/>
-                        C: Testing ({grades['ILO9_3_C'] || 0}/5)
+                      {/* ILO 8 */}
+                      <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
+                        <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>ILO 8 ({getTotal('ILO8')}/10)</div>
+                        <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
+                          A: Training Job ({(grades['ILO8_A_training'] || 0) + (grades['ILO8_A_model'] || 0)}/4)<br/>
+                          • Training Success ({grades['ILO8_A_training'] || 0}/3)<br/>
+                          • Model Registration ({grades['ILO8_A_model'] || 0}/1)<br/>
+                          B: Advanced Features ({(grades['ILO8_B_pipeline'] || 0) + (grades['ILO8_B_mlflow'] || 0) + (grades['ILO8_B_scheduled'] || 0) + (grades['ILO8_B_retraining'] || 0)}/6)<br/>
+                          • Pipeline/Tuning ({grades['ILO8_B_pipeline'] || 0}/3)<br/>
+                          • MLFlow Metrics ({grades['ILO8_B_mlflow'] || 0}/1)<br/>
+                          • Scheduling ({grades['ILO8_B_scheduled'] || 0}/1)<br/>
+                          • Auto-retraining ({grades['ILO8_B_retraining'] || 0}/1)
+                        </div>
                       </div>
-                    </div>
 
-                    {/* ILO 9.4 */}
-                    <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
-                      <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>ILO 9.4 ({getTotal('ILO9_4')}/15)</div>
-                      <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
-                        A: Data Storage ({(grades['ILO9_4_A_raw'] || 0) + (grades['ILO9_4_A_processed'] || 0)}/5)<br/>
-                        • Raw Data ({grades['ILO9_4_A_raw'] || 0}/2)<br/>
-                        • Processed Data ({grades['ILO9_4_A_processed'] || 0}/3)<br/>
-                        B: Pipeline ({(grades['ILO9_4_B_pipeline'] || 0) + (grades['ILO9_4_B_scheduled'] || 0)}/10)<br/>
-                        • Working Pipeline ({grades['ILO9_4_B_pipeline'] || 0}/7)<br/>
-                        • Scheduling ({grades['ILO9_4_B_scheduled'] || 0}/3)
+                      {/* ILO 9.3 */}
+                      <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
+                        <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>ILO 9.3 ({getTotal('ILO9_3')}/15)</div>
+                        <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
+                          A: Code Quality ({grades['ILO9_3_A'] || 0}/5)<br/>
+                          B: Documentation ({(grades['ILO9_3_B_docs'] || 0) + (grades['ILO9_3_B_readme'] || 0)}/5)<br/>
+                          • Published Docs ({grades['ILO9_3_B_docs'] || 0}/4)<br/>
+                          • README ({grades['ILO9_3_B_readme'] || 0}/1)<br/>
+                          C: Testing ({grades['ILO9_3_C'] || 0}/5)
+                        </div>
                       </div>
-                    </div>
 
-                    {/* ILO 10 */}
-                    <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
-                      <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>ILO 10 ({getTotal('ILO10')}/10)</div>
-                      <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
-                        A: Monitoring Dashboard ({(grades['ILO10_A_latency'] || 0) + (grades['ILO10_A_confidence'] || 0)}/4)<br/>
-                        • Request Latency ({grades['ILO10_A_latency'] || 0}/2)<br/>
-                        • Model Confidence ({grades['ILO10_A_confidence'] || 0}/2)<br/>
-                        B: Frontend Quality ({grades['ILO10_B'] || 0}/6)
+                      {/* ILO 9.4 */}
+                      <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
+                        <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>ILO 9.4 ({getTotal('ILO9_4')}/15)</div>
+                        <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
+                          A: Data Storage ({(grades['ILO9_4_A_raw'] || 0) + (grades['ILO9_4_A_processed'] || 0)}/5)<br/>
+                          • Raw Data ({grades['ILO9_4_A_raw'] || 0}/2)<br/>
+                          • Processed Data ({grades['ILO9_4_A_processed'] || 0}/3)<br/>
+                          B: Pipeline ({(grades['ILO9_4_B_pipeline'] || 0) + (grades['ILO9_4_B_scheduled'] || 0)}/10)<br/>
+                          • Working Pipeline ({grades['ILO9_4_B_pipeline'] || 0}/7)<br/>
+                          • Scheduling ({grades['ILO9_4_B_scheduled'] || 0}/3)
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Other ILOs */}
-                    <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
-                      <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>Other ILOs (TBD)</div>
-                      <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
-                        ILO 1: Post-demo assessment<br/>
-                        ILO 2: Post-demo + demeanor<br/>
-                        ILO 9.5: Criteria not specified
+                      {/* ILO 9.5 */}
+                      <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
+                        <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>ILO 9.5 ({getTotal('ILO9_5')}/15)</div>
+                        <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
+                          A: Deployed Application ({grades['ILO9_5_A'] || 0}/3)<br/>
+                          B: GitHub & DevOps ({(grades['ILO9_5_B_branching'] || 0) + (grades['ILO9_5_B_cicd_testing'] || 0) + (grades['ILO9_5_B_cicd_build'] || 0)}/5)<br/>
+                          • Branching ({grades['ILO9_5_B_branching'] || 0}/2)<br/>
+                          • CI/CD Testing ({grades['ILO9_5_B_cicd_testing'] || 0}/2)<br/>
+                          • CI/CD Build ({grades['ILO9_5_B_cicd_build'] || 0}/1)<br/>
+                          C: Model Integration ({grades['ILO9_5_C'] || 0}/3)<br/>
+                          D: Retraining Pipeline ({(grades['ILO9_5_D_feedback'] || 0) + (grades['ILO9_5_D_data'] || 0) + (grades['ILO9_5_D_trigger'] || 0) + (grades['ILO9_5_D_deploy'] || 0)}/4)
+                        </div>
+                      </div>
+
+                      {/* ILO 10 */}
+                      <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
+                        <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>ILO 10 ({getTotal('ILO10')}/10)</div>
+                        <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
+                          A: Monitoring Dashboard ({(grades['ILO10_A_latency'] || 0) + (grades['ILO10_A_confidence'] || 0)}/4)<br/>
+                          • Request Latency ({grades['ILO10_A_latency'] || 0}/2)<br/>
+                          • Model Confidence ({grades['ILO10_A_confidence'] || 0}/2)<br/>
+                          B: Frontend Quality ({grades['ILO10_B'] || 0}/6)
+                        </div>
+                      </div>
+
+                      {/* Other ILOs */}
+                      <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
+                        <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>Other ILOs (TBD)</div>
+                        <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
+                          ILO 1: Post-demo assessment<br/>
+                          ILO 2: Post-demo + demeanor
+                        </div>
                       </div>
                     </div>
                   </div>
