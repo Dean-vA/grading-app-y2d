@@ -50,7 +50,7 @@
         );
 
         const DemoGradingApp = () => {
-          const [activeTab, setActiveTab] = useState('Diagrams');
+          const [activeTab, setActiveTab] = useState('Deployment');
           const [groupName, setGroupName] = useState('');
           const [grades, setGrades] = useState({});
           const [comments, setComments] = useState({});
@@ -125,24 +125,26 @@
                 totalPoints: getTotalPoints(),
                 
                 artifactSummary: {
+                  'Deployment & DevOps': getTotal('ILO9_5'),
+                  'Frontend & Monitoring': getTotal('ILO10'),
                   'Architecture & Cost Analysis': getTotal('ILO4'),
                   'Azure ML & Training': getTotal('ILO8') + getTotal('ILO9_4_A'),
                   'Code Quality & Documentation': getTotal('ILO9_3'),
-                  'Data Pipelines': getTotal('ILO9_4_B'),
-                  'Frontend & Monitoring': getTotal('ILO10'),
-                  'Deployment & DevOps': getTotal('ILO9_5')
+                  'Data Pipelines': getTotal('ILO9_4_B')
                 },
                 
                 iloBreakdown: {
                   'ILO 4': {
                     total: `${getTotal('ILO4')}/10`,
                     sections: {
-                      'A: Architecture Diagrams': `${grades['ILO4_A'] || 0}/5`,
-                      'B: Cost Analysis': `${grades['ILO4_B'] || 0}/5`
+                      'A: Architecture Diagrams & Plans': `${grades['ILO4_A'] || 0}/5`,
+                      'B: Cost Analysis': `${grades['ILO4_B'] || 0}/4`,
+                      'C: GPU Usage': `${grades['ILO4_C_GPU'] || 0}/1`
                     },
                     comments: {
                       'Architecture Diagrams': comments['ILO4_A'] || '',
                       'Cost Analysis': comments['ILO4_B'] || '',
+                      'GPU Usage': comments['ILO4_C_GPU'] || '',
                       'Overall': comments['Diagrams_Overall'] || ''
                     }
                   },
@@ -190,7 +192,7 @@
                       'A: Deployed Application': `${grades['ILO9_5_A'] || 0}/3`,
                       'B: GitHub & DevOps': `${(grades['ILO9_5_B_branching'] || 0) + (grades['ILO9_5_B_cicd_testing'] || 0) + (grades['ILO9_5_B_cicd_build'] || 0)}/5`,
                       'C: Model Integration': `${grades['ILO9_5_C'] || 0}/3`,
-                      'D: Retraining Pipeline': `${(grades['ILO9_5_D_feedback'] || 0) + (grades['ILO9_5_D_data'] || 0) + (grades['ILO9_5_D_trigger'] || 0) + (grades['ILO9_5_D_deploy'] || 0)}/6`
+                      'D: Retraining Pipeline': `${(grades['ILO9_5_D_feedback'] || 0) + (grades['ILO9_5_D_data'] || 0) + (grades['ILO9_5_D_trigger'] || 0) + (grades['ILO9_5_D_deploy'] || 0)}/4`
                     },
                     comments: {
                       'Deployment': comments['ILO9_5_A'] || '',
@@ -577,16 +579,28 @@
 
           const tabs = [
             { 
-              id: 'Diagrams', 
-              name: 'Architecture & Cost Analysis',
+              id: 'Deployment', 
+              name: 'Deployment & DevOps',
+              maxPoints: 15,
+              ilos: 'ILO 9.5'
+            },
+            { 
+              id: 'Frontend', 
+              name: 'Frontend & Monitoring',
               maxPoints: 10,
-              ilos: 'ILO 4'
+              ilos: 'ILO 10'
             },
             { 
               id: 'AzureML', 
               name: 'Azure ML & Training',
-              maxPoints: 15,
-              ilos: 'ILO 8, 9.4'
+              maxPoints: 16,
+              ilos: 'ILO 4 (GPU), 8, 9.4'
+            },
+            { 
+              id: 'Diagrams', 
+              name: 'Architecture & Cost Analysis',
+              maxPoints: 9,
+              ilos: 'ILO 4'
             },
             { 
               id: 'Code', 
@@ -599,18 +613,6 @@
               name: 'Data Pipelines',
               maxPoints: 10,
               ilos: 'ILO 9.4'
-            },
-            { 
-              id: 'Frontend', 
-              name: 'Frontend & Monitoring',
-              maxPoints: 10,
-              ilos: 'ILO 10'
-            },
-            { 
-              id: 'Deployment', 
-              name: 'Deployment & DevOps',
-              maxPoints: 15,
-              ilos: 'ILO 9.5'
             },
             { 
               id: 'Other', 
@@ -712,38 +714,272 @@
 
               {/* Tab Content */}
               <div style={styles.content}>
+                {activeTab === 'Deployment' && (
+                  <div>
+                    <h2 style={styles.sectionTitle}>Deployment & DevOps</h2>
+                    <p style={styles.iloList}>Covers: ILO 9.5</p>
+                    
+                    <h3 style={styles.subsectionTitle}>A: Deployed Application (3 Points)</h3>
+                    <div style={styles.checkboxGroup}>
+                      <div style={styles.checkboxHeader}>
+                        <div>
+                          <label style={styles.label}>Application Deployment (On-prem [portainer] and cloud)</label>
+                          <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>ILO 9.5</div>
+                        </div>
+                        <div style={styles.pointsContainer}>
+                          <span style={styles.pointsLabel}>Points:</span>
+                          <input
+                            type="number"
+                            min="0"
+                            max={3}
+                            value={grades['ILO9_5_A'] || 0}
+                            onChange={(e) => updateGrade('ILO9_5', 'A', parseInt(e.target.value) || 0)}
+                            style={styles.pointsInput}
+                          />
+                          <span style={styles.pointsLabel}>/ 3</span>
+                        </div>
+                      </div>
+                      <div style={{marginTop: '12px', paddingLeft: '8px', borderLeft: '3px solid #e5e7eb'}}>
+                        <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Scoring criteria:</div>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="deployment_score" 
+                              checked={grades['ILO9_5_A'] === 3}
+                              onChange={() => updateGrade('ILO9_5', 'A', 3)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#16a34a', fontWeight: '500'}}>3 points:</span>
+                            <span style={{color: '#374151'}}>Backend and frontend running on portainer and inference works</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="deployment_score" 
+                              checked={grades['ILO9_5_A'] === 2}
+                              onChange={() => updateGrade('ILO9_5', 'A', 2)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#ca8a04', fontWeight: '500'}}>2 points:</span>
+                            <span style={{color: '#374151'}}>Backend running on portainer with FastAPI docs and inference works</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="deployment_score" 
+                              checked={grades['ILO9_5_A'] === 1}
+                              onChange={() => updateGrade('ILO9_5', 'A', 1)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#dc2626', fontWeight: '500'}}>Max 1 point:</span>
+                            <span style={{color: '#374151'}}>Only running locally</span>
+                          </label>
+                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
+                            <input 
+                              type="radio" 
+                              name="deployment_score" 
+                              checked={grades['ILO9_5_A'] === 0}
+                              onChange={() => updateGrade('ILO9_5', 'A', 0)}
+                              style={{marginTop: '2px'}}
+                            />
+                            <span style={{color: '#6b7280', fontWeight: '500'}}>0 points:</span>
+                            <span style={{color: '#374151'}}>No working deployment</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <CommentSection section="ILO9_5_A" placeholder="Comments on application deployment..." />
+                    
+                    <h3 style={styles.subsectionTitle}>B: GitHub Repository & DevOps (5 Points)</h3>
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="B_branching"
+                      maxPoints={2}
+                      label="Branching Strategy (Main protected, merge by pull requests)"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_B_branching" placeholder="Comments on branching strategy and pull request workflow..." />
+                    
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="B_cicd_testing"
+                      maxPoints={2}
+                      label="CI/CD - Automated linting and unit testing"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_B_cicd_testing" placeholder="Comments on automated testing in CI/CD..." />
+                    
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="B_cicd_build"
+                      maxPoints={1}
+                      label="CI/CD - Automated container build and push"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_B_cicd_build" placeholder="Comments on automated container builds..." />
+                    
+                    <h3 style={styles.subsectionTitle}>C: Model Integration (3 Points)</h3>
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="C"
+                      maxPoints={3}
+                      label="Model from training pipeline stored in model store and used in application"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_C" placeholder="Comments on model integration from training to application..." />
+                    
+                    <h3 style={styles.subsectionTitle}>D: Retraining Pipeline (4 Points)</h3>
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="D_feedback"
+                      maxPoints={1}
+                      label="User feedback on predictions in place"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_D_feedback" placeholder="Comments on user feedback collection system..." />
+                    
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="D_data"
+                      maxPoints={1}
+                      label="Data stored in data store and processed with data pipeline"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_D_data" placeholder="Comments on data storage and pipeline integration..." />
+                    
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="D_trigger"
+                      maxPoints={1}
+                      label="New training jobs triggered to retrain on new data"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_D_trigger" placeholder="Comments on automatic training job triggers..." />
+                    
+                    <CheckboxGroup
+                      section="ILO9_5"
+                      subsection="D_deploy"
+                      maxPoints={1}
+                      label="New models automatically deployed"
+                      ilo="9.5"
+                    />
+                    <CommentSection section="ILO9_5_D_deploy" placeholder="Comments on automatic model deployment..." />
+                    
+                    <CommentSection section="Deployment_Overall" placeholder="Overall comments on deployment and DevOps implementation..." />
+                  </div>
+                )}
+
+                {activeTab === 'Frontend' && (
+                  <div>
+                    <h2 style={styles.sectionTitle}>Frontend & Monitoring</h2>
+                    <p style={styles.iloList}>Covers: ILO 10</p>
+                    
+                    <h3 style={styles.subsectionTitle}>Monitoring Dashboard (4 Points)</h3>
+                    <CheckboxGroup
+                      section="ILO10"
+                      subsection="A_latency"
+                      maxPoints={2}
+                      label="Request latency over time"
+                      ilo="10"
+                    />
+                    <CommentSection section="ILO10_A_latency" placeholder="Comments on request latency monitoring..." />
+                    
+                    <CheckboxGroup
+                      section="ILO10"
+                      subsection="A_confidence"
+                      maxPoints={2}
+                      label="Model confidence over time"
+                      ilo="10"
+                    />
+                    <CommentSection section="ILO10_A_confidence" placeholder="Comments on model confidence monitoring..." />
+                    
+                    <h3 style={styles.subsectionTitle}>Frontend Quality (6 Points)</h3>
+                    <div style={styles.criteriaBox}>
+                      <p style={styles.criteriaText}>Assess: Style, Functionality, Features, Visualizations (max 4pts if no visualizations)</p>
+                      <CheckboxGroup
+                        section="ILO10"
+                        subsection="B"
+                        maxPoints={6}
+                        label="Frontend Assessment (Style, Functionality, Features, Visualizations)"
+                        ilo="10"
+                      />
+                    </div>
+                    <CommentSection section="ILO10_B" placeholder="Comments on frontend quality and features..." />
+                    
+                    <CommentSection section="Frontend_Overall" placeholder="Overall comments on monitoring dashboard and frontend..." />
+                  </div>
+                )}
+
                 {activeTab === 'Diagrams' && (
                   <div>
                     <h2 style={styles.sectionTitle}>Architecture & Cost Analysis</h2>
                     <p style={styles.iloList}>Covers: ILO 4</p>
                     
-                    <CheckboxGroup
-                      section="ILO4"
-                      subsection="A"
-                      maxPoints={5}
-                      label="Architecture Diagrams (1-5 based on completeness and quality)"
-                      ilo="4"
-                    />
-                    <CommentSection section="ILO4_A" placeholder="Comments on architecture diagrams..." />
+                    <h3 style={styles.subsectionTitle}>A: Architecture Diagrams and Plans (5 Points)</h3>
+                    <div style={styles.criteriaBox}>
+                      <p style={styles.criteriaText}>
+                        <strong>Required Components:</strong><br/>
+                        • Package Plan<br/>
+                        • Cloud and On-Prem Architecture Diagrams<br/>
+                        • Roadmap and High-level plan<br/>
+                        <br/>
+                        <strong>Assessment:</strong> 1-5 points based on completeness and quality of all components
+                      </p>
+                      <CheckboxGroup
+                        section="ILO4"
+                        subsection="A"
+                        maxPoints={5}
+                        label="Architecture Diagrams and Plans (Package Plan, Cloud/On-Prem Diagrams, Roadmap)"
+                        ilo="4"
+                      />
+                    </div>
+                    <CommentSection section="ILO4_A" placeholder="Comments on architecture diagrams, package plan, and roadmap completeness and quality..." />
                     
-                    <CheckboxGroup
-                      section="ILO4"
-                      subsection="B"
-                      maxPoints={5}
-                      label="Cost Analysis (Check if present, better to check next week)"
-                      ilo="4"
-                    />
-                    <CommentSection section="ILO4_B" placeholder="Comments on cost analysis..." />
+                    <h3 style={styles.subsectionTitle}>B: Cost Analysis (4 Points)</h3>
+                    <div style={styles.criteriaBox}>
+                      <p style={styles.criteriaText}>
+                        <strong>Note:</strong> GPU usage assessment (1 point) should be checked with Azure ML workspace artifacts, not here.<br/>
+                        Cost analysis document assessment only.
+                      </p>
+                      <CheckboxGroup
+                        section="ILO4"
+                        subsection="B"
+                        maxPoints={4}
+                        label="Cost Analysis Document (Check if present, better to check next week)"
+                        ilo="4"
+                      />
+                    </div>
+                    <CommentSection section="ILO4_B" placeholder="Comments on cost analysis document..." />
                     
-                    <CommentSection section="Diagrams_Overall" placeholder="Overall comments on architecture and cost analysis..." />
+                    <CommentSection section="Diagrams_Overall" placeholder="Overall comments on architecture diagrams, plans, and cost analysis..." />
                   </div>
                 )}
 
                 {activeTab === 'AzureML' && (
                   <div>
                     <h2 style={styles.sectionTitle}>Azure ML & Training</h2>
-                    <p style={styles.iloList}>Covers: ILO 8, ILO 9.4 (Data Storage)</p>
+                    <p style={styles.iloList}>Covers: ILO 4 (GPU), ILO 8, ILO 9.4 (Data Storage)</p>
                     
+                    <h3 style={styles.subsectionTitle}>Data Storage (5 Points)</h3>
+                    <CheckboxGroup
+                      section="ILO9_4"
+                      subsection="A_raw"
+                      maxPoints={2}
+                      label="Raw data in blob store uploaded using code"
+                      ilo="9.4"
+                    />
+                    <CommentSection section="ILO9_4_A_raw" placeholder="Comments on raw data storage..." />
+                    
+                    <CheckboxGroup
+                      section="ILO9_4"
+                      subsection="A_processed"
+                      maxPoints={3}
+                      label="Processed data stored as data assets with versions (train/test/validation)"
+                      ilo="9.4"
+                    />
+                    <CommentSection section="ILO9_4_A_processed" placeholder="Comments on processed data assets..." />    
+
                     <h3 style={styles.subsectionTitle}>Training Job (4 Points)</h3>
                     <div style={styles.checkboxGroup}>
                       <div style={styles.checkboxHeader}>
@@ -853,7 +1089,7 @@
                       section="ILO8"
                       subsection="B_pipeline"
                       maxPoints={3}
-                      label="Training pipelines with multiple components hyperparameter tuning"
+                      label="Training pipelines with multiple components hyperparameter tuning, multiple models/model architectures"
                       ilo="8"
                     />
                     <CommentSection section="ILO8_B_pipeline" placeholder="Comments on training pipelines..." />
@@ -885,24 +1121,18 @@
                     />
                     <CommentSection section="ILO8_B_retraining" placeholder="Comments on automated retraining..." />
                     
-                    <h3 style={styles.subsectionTitle}>Data Storage (5 Points)</h3>
+                    <h3 style={styles.subsectionTitle}>GPU Usage Assessment (1 Point)</h3>
+                    <div style={{...styles.alert, ...styles.infoAlert}}>
+                      <p><strong>Note:</strong> This point is part of ILO 4 but should be assessed here with Azure ML artifacts.</p>
+                    </div>
                     <CheckboxGroup
-                      section="ILO9_4"
-                      subsection="A_raw"
-                      maxPoints={2}
-                      label="Raw data in blob store uploaded using code"
-                      ilo="9.4"
+                      section="ILO4"
+                      subsection="C_GPU"
+                      maxPoints={1}
+                      label="Training/inference running on GPU (from ILO 4)"
+                      ilo="4"
                     />
-                    <CommentSection section="ILO9_4_A_raw" placeholder="Comments on raw data storage..." />
-                    
-                    <CheckboxGroup
-                      section="ILO9_4"
-                      subsection="A_processed"
-                      maxPoints={3}
-                      label="Processed data stored as data assets with versions (train/test/validation)"
-                      ilo="9.4"
-                    />
-                    <CommentSection section="ILO9_4_A_processed" placeholder="Comments on processed data assets..." />
+                    <CommentSection section="ILO4_C_GPU" placeholder="Comments on GPU usage for training/inference..." />
                     
                     <CommentSection section="AzureML_Overall" placeholder="Overall comments on Azure ML implementation..." />
                   </div>
@@ -1145,203 +1375,6 @@
                   </div>
                 )}
 
-                {activeTab === 'Frontend' && (
-                  <div>
-                    <h2 style={styles.sectionTitle}>Frontend & Monitoring</h2>
-                    <p style={styles.iloList}>Covers: ILO 10</p>
-                    
-                    <h3 style={styles.subsectionTitle}>Monitoring Dashboard (4 Points)</h3>
-                    <CheckboxGroup
-                      section="ILO10"
-                      subsection="A_latency"
-                      maxPoints={2}
-                      label="Request latency over time"
-                      ilo="10"
-                    />
-                    <CommentSection section="ILO10_A_latency" placeholder="Comments on request latency monitoring..." />
-                    
-                    <CheckboxGroup
-                      section="ILO10"
-                      subsection="A_confidence"
-                      maxPoints={2}
-                      label="Model confidence over time"
-                      ilo="10"
-                    />
-                    <CommentSection section="ILO10_A_confidence" placeholder="Comments on model confidence monitoring..." />
-                    
-                    <h3 style={styles.subsectionTitle}>Frontend Quality (6 Points)</h3>
-                    <div style={styles.criteriaBox}>
-                      <p style={styles.criteriaText}>Assess: Style, Functionality, Features, Visualizations (max 4pts if no visualizations)</p>
-                      <CheckboxGroup
-                        section="ILO10"
-                        subsection="B"
-                        maxPoints={6}
-                        label="Frontend Assessment (Style, Functionality, Features, Visualizations)"
-                        ilo="10"
-                      />
-                    </div>
-                    <CommentSection section="ILO10_B" placeholder="Comments on frontend quality and features..." />
-                    
-                    <CommentSection section="Frontend_Overall" placeholder="Overall comments on monitoring dashboard and frontend..." />
-                  </div>
-                )}
-
-                {activeTab === 'Deployment' && (
-                  <div>
-                    <h2 style={styles.sectionTitle}>Deployment & DevOps</h2>
-                    <p style={styles.iloList}>Covers: ILO 9.5</p>
-                    
-                    <h3 style={styles.subsectionTitle}>A: Deployed Application (3 Points)</h3>
-                    <div style={styles.checkboxGroup}>
-                      <div style={styles.checkboxHeader}>
-                        <div>
-                          <label style={styles.label}>Application Deployment (On-prem [portainer] and cloud)</label>
-                          <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '2px' }}>ILO 9.5</div>
-                        </div>
-                        <div style={styles.pointsContainer}>
-                          <span style={styles.pointsLabel}>Points:</span>
-                          <input
-                            type="number"
-                            min="0"
-                            max={3}
-                            value={grades['ILO9_5_A'] || 0}
-                            onChange={(e) => updateGrade('ILO9_5', 'A', parseInt(e.target.value) || 0)}
-                            style={styles.pointsInput}
-                          />
-                          <span style={styles.pointsLabel}>/ 3</span>
-                        </div>
-                      </div>
-                      <div style={{marginTop: '12px', paddingLeft: '8px', borderLeft: '3px solid #e5e7eb'}}>
-                        <div style={{fontSize: '14px', color: '#6b7280', marginBottom: '8px'}}>Scoring criteria:</div>
-                        <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
-                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                            <input 
-                              type="radio" 
-                              name="deployment_score" 
-                              checked={grades['ILO9_5_A'] === 3}
-                              onChange={() => updateGrade('ILO9_5', 'A', 3)}
-                              style={{marginTop: '2px'}}
-                            />
-                            <span style={{color: '#16a34a', fontWeight: '500'}}>3 points:</span>
-                            <span style={{color: '#374151'}}>Backend and frontend running on portainer and inference works</span>
-                          </label>
-                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                            <input 
-                              type="radio" 
-                              name="deployment_score" 
-                              checked={grades['ILO9_5_A'] === 2}
-                              onChange={() => updateGrade('ILO9_5', 'A', 2)}
-                              style={{marginTop: '2px'}}
-                            />
-                            <span style={{color: '#ca8a04', fontWeight: '500'}}>2 points:</span>
-                            <span style={{color: '#374151'}}>Backend running on portainer with FastAPI docs and inference works</span>
-                          </label>
-                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                            <input 
-                              type="radio" 
-                              name="deployment_score" 
-                              checked={grades['ILO9_5_A'] === 1}
-                              onChange={() => updateGrade('ILO9_5', 'A', 1)}
-                              style={{marginTop: '2px'}}
-                            />
-                            <span style={{color: '#dc2626', fontWeight: '500'}}>Max 1 point:</span>
-                            <span style={{color: '#374151'}}>Only running locally</span>
-                          </label>
-                          <label style={{display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer'}}>
-                            <input 
-                              type="radio" 
-                              name="deployment_score" 
-                              checked={grades['ILO9_5_A'] === 0}
-                              onChange={() => updateGrade('ILO9_5', 'A', 0)}
-                              style={{marginTop: '2px'}}
-                            />
-                            <span style={{color: '#6b7280', fontWeight: '500'}}>0 points:</span>
-                            <span style={{color: '#374151'}}>No working deployment</span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                    <CommentSection section="ILO9_5_A" placeholder="Comments on application deployment..." />
-                    
-                    <h3 style={styles.subsectionTitle}>B: GitHub Repository & DevOps (5 Points)</h3>
-                    <CheckboxGroup
-                      section="ILO9_5"
-                      subsection="B_branching"
-                      maxPoints={2}
-                      label="Branching Strategy (Main protected, merge by pull requests)"
-                      ilo="9.5"
-                    />
-                    <CommentSection section="ILO9_5_B_branching" placeholder="Comments on branching strategy and pull request workflow..." />
-                    
-                    <CheckboxGroup
-                      section="ILO9_5"
-                      subsection="B_cicd_testing"
-                      maxPoints={2}
-                      label="CI/CD - Automated linting and unit testing"
-                      ilo="9.5"
-                    />
-                    <CommentSection section="ILO9_5_B_cicd_testing" placeholder="Comments on automated testing in CI/CD..." />
-                    
-                    <CheckboxGroup
-                      section="ILO9_5"
-                      subsection="B_cicd_build"
-                      maxPoints={1}
-                      label="CI/CD - Automated container build and push"
-                      ilo="9.5"
-                    />
-                    <CommentSection section="ILO9_5_B_cicd_build" placeholder="Comments on automated container builds..." />
-                    
-                    <h3 style={styles.subsectionTitle}>C: Model Integration (3 Points)</h3>
-                    <CheckboxGroup
-                      section="ILO9_5"
-                      subsection="C"
-                      maxPoints={3}
-                      label="Model from training pipeline stored in model store and used in application"
-                      ilo="9.5"
-                    />
-                    <CommentSection section="ILO9_5_C" placeholder="Comments on model integration from training to application..." />
-                    
-                    <h3 style={styles.subsectionTitle}>D: Retraining Pipeline (4 Points)</h3>
-                    <CheckboxGroup
-                      section="ILO9_5"
-                      subsection="D_feedback"
-                      maxPoints={1}
-                      label="User feedback on predictions in place"
-                      ilo="9.5"
-                    />
-                    <CommentSection section="ILO9_5_D_feedback" placeholder="Comments on user feedback collection system..." />
-                    
-                    <CheckboxGroup
-                      section="ILO9_5"
-                      subsection="D_data"
-                      maxPoints={1}
-                      label="Data stored in data store and processed with data pipeline"
-                      ilo="9.5"
-                    />
-                    <CommentSection section="ILO9_5_D_data" placeholder="Comments on data storage and pipeline integration..." />
-                    
-                    <CheckboxGroup
-                      section="ILO9_5"
-                      subsection="D_trigger"
-                      maxPoints={1}
-                      label="New training jobs triggered to retrain on new data"
-                      ilo="9.5"
-                    />
-                    <CommentSection section="ILO9_5_D_trigger" placeholder="Comments on automatic training job triggers..." />
-                    
-                    <CheckboxGroup
-                      section="ILO9_5"
-                      subsection="D_deploy"
-                      maxPoints={1}
-                      label="New models automatically deployed"
-                      ilo="9.5"
-                    />
-                    <CommentSection section="ILO9_5_D_deploy" placeholder="Comments on automatic model deployment..." />
-                    
-                    <CommentSection section="Deployment_Overall" placeholder="Overall comments on deployment and DevOps implementation..." />
-                  </div>
-                )}
-
                 {activeTab === 'Other' && (
                   <div>
                     <h2 style={styles.sectionTitle}>Other ILOs</h2>
@@ -1419,8 +1452,9 @@
                       <div style={{padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '6px'}}>
                         <div style={{fontWeight: '600', marginBottom: '8px', color: '#1f2937'}}>ILO 4 ({getTotal('ILO4')}/10)</div>
                         <div style={{fontSize: '14px', color: '#6b7280', lineHeight: '1.4'}}>
-                          A: Architecture Diagrams ({grades['ILO4_A'] || 0}/5)<br/>
-                          B: Cost Analysis ({grades['ILO4_B'] || 0}/5)
+                          A: Architecture Diagrams & Plans ({grades['ILO4_A'] || 0}/5)<br/>
+                          B: Cost Analysis ({grades['ILO4_B'] || 0}/4)<br/>
+                          C: GPU Usage ({grades['ILO4_C_GPU'] || 0}/1) <em>(assessed in Azure ML tab)</em>
                         </div>
                       </div>
 
