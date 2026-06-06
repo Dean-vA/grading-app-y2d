@@ -1,23 +1,30 @@
-# Dockerfile
-FROM node:18-alpine
+# ---- Build stage: install all deps and build the Vite app ----
+FROM node:18-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
+# Install dependencies (including devDependencies needed for the Vite/TS build)
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
 
-# Copy source code
+# Build the app -> dist/
 COPY . .
-
-# Build the React app
 RUN npm run build
 
-# Expose port
+# ---- Runtime stage: production deps + built assets + server ----
+FROM node:18-alpine AS runtime
+
+ENV NODE_ENV=production
+WORKDIR /app
+
+# Only production dependencies for the Express server
+COPY package*.json ./
+RUN npm install --omit=dev && npm cache clean --force
+
+# Copy the built frontend and the server
+COPY --from=builder /app/dist ./dist
+COPY server.js ./
+
 EXPOSE 3000
 
-# Start the application
 CMD ["npm", "start"]
