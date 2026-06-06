@@ -8,17 +8,10 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-    volumes:
-      # Optional: Mount a volume for persistent data storage
-      - grading_data:/app/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-
-volumes:
-  grading_data:
-    driver: local

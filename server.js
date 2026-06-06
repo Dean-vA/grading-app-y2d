@@ -8,52 +8,39 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Security and performance middleware
-app.use(helmet({
-  contentSecurityPolicy: false, // Disable CSP for React inline styles
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  }),
+);
 app.use(compression());
 app.use(cors());
 app.use(express.json());
 
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve the built Vite app
+const distDir = path.join(__dirname, 'dist');
+app.use(express.static(distDir));
 
-// Health check endpoint
+// Health check endpoint (used by the Docker/Cloud Run healthcheck)
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
+  res.json({
+    status: 'healthy',
     timestamp: new Date().toISOString(),
-    version: '1.0.0'
+    version: '2.0.0',
   });
 });
 
-// API endpoint to save grading data (optional - for server-side storage)
-app.post('/api/save-grades', (req, res) => {
-  const { groupName, grades, comments } = req.body;
-  
-  // In a real application, you'd save to a database here
-  console.log(`Saving grades for group: ${groupName}`);
-  console.log('Grades:', grades);
-  console.log('Comments:', comments);
-  
-  res.json({ 
-    success: true, 
-    message: 'Grades saved successfully',
-    groupName 
-  });
-});
-
-// Serve the React app for all other routes
+// Serve the SPA for all other routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(distDir, 'index.html'));
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Internal server error',
-    message: err.message 
+    message: err.message,
   });
 });
 

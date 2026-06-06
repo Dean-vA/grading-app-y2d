@@ -1,0 +1,170 @@
+/* ============================================================
+   Design tokens — light (default) and dark themes.
+   Components consume these via var(--token); the dark theme
+   simply overrides the same variable names on [data-theme="dark"].
+   ============================================================ */
+
+:root {
+  /* Surfaces & text */
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --surface-3: #f1f5f9;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+
+  /* Accent */
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-text: #ffffff;
+  --accent-soft: #dbeafe;
+  --accent-soft-text: #1e40af;
+
+  /* Tones (scoring criteria) */
+  --tone-good: #16a34a;
+  --tone-good-bg: #dcfce7;
+  --tone-warn: #ca8a04;
+  --tone-warn-bg: #fef9c3;
+  --tone-bad: #dc2626;
+  --tone-bad-bg: #fee2e2;
+  --tone-neutral: #64748b;
+  --tone-neutral-bg: #f1f5f9;
+
+  /* Alerts */
+  --info-bg: #dbeafe;
+  --info-border: #3b82f6;
+  --info-text: #1e40af;
+  --warn-bg: #fef3c7;
+  --warn-border: #f59e0b;
+  --warn-text: #92400e;
+
+  /* Button variants */
+  --btn-success: #16a34a;
+  --btn-success-hover: #15803d;
+  --btn-danger: #dc2626;
+  --btn-danger-hover: #b91c1c;
+
+  /* Progress */
+  --progress-track: #e2e8f0;
+  --progress-fill: #2563eb;
+
+  /* Radii / shadows */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.1), 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.18);
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Typography */
+  --fs-xs: 12px;
+  --fs-sm: 14px;
+  --fs-base: 16px;
+  --fs-lg: 18px;
+  --fs-xl: 22px;
+  --fs-2xl: 28px;
+
+  /* Controls — minimum 44px tap target on mobile */
+  --control-min: 44px;
+
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+[data-theme='dark'] {
+  --bg: #0b1120;
+  --surface: #111827;
+  --surface-2: #1e293b;
+  --surface-3: #0f172a;
+  --border: #1f2a3b;
+  --border-strong: #334155;
+  --text: #e5e7eb;
+  --text-muted: #94a3b8;
+  --text-faint: #64748b;
+
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --accent-text: #ffffff;
+  --accent-soft: #1e3a8a;
+  --accent-soft-text: #bfdbfe;
+
+  --tone-good: #4ade80;
+  --tone-good-bg: #14321f;
+  --tone-warn: #fbbf24;
+  --tone-warn-bg: #3a2f0b;
+  --tone-bad: #f87171;
+  --tone-bad-bg: #3b1518;
+  --tone-neutral: #94a3b8;
+  --tone-neutral-bg: #1e293b;
+
+  --info-bg: #14233f;
+  --info-border: #3b82f6;
+  --info-text: #bfdbfe;
+  --warn-bg: #36280b;
+  --warn-border: #d97706;
+  --warn-text: #fcd34d;
+
+  --btn-success: #16a34a;
+  --btn-success-hover: #22c55e;
+  --btn-danger: #dc2626;
+  --btn-danger-hover: #ef4444;
+
+  --progress-track: #1f2a3b;
+  --progress-fill: #3b82f6;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font);
+  background-color: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

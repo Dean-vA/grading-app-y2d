@@ -1,0 +1,100 @@
+.summary {
+  margin-top: var(--space-6);
+  padding: var(--space-5);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.heading {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-4);
+}
+
+.artifactGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 560px) {
+  .artifactGrid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+}
+
+.artifact {
+  text-align: center;
+  padding: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.artifactName {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.artifactScore {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 2px;
+}
+
+.totalRow {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.breakdown {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+.breakdownHeading {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-4);
+}
+
+.breakdownGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .breakdownGrid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+}
+
+.iloCard {
+  padding: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.iloTitle {
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-2);
+}
+
+.iloLines {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  line-height: 1.6;
+}
