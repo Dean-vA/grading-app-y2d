@@ -129,6 +129,13 @@
   background: var(--accent-hover);
 }
 
+.excel {
+  background: #1d6f42;
+}
+.excel:not(:disabled):hover {
+  background: #15823b;
+}
+
 .import {
   background: var(--btn-success);
 }

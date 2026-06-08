@@ -1,3 +1,4 @@
+import { MUST_PASS_ILOS } from './rubric';
 import type { Grades, IloId, Rubric, RubricItem, TabId } from './types';
 
 export function clamp(value: number, min: number, max: number): number {
@@ -70,4 +71,24 @@ export function tabCompletion(rubric: Rubric, grades: Grades, tab: TabId): Compl
 export function overallCompletion(rubric: Rubric, grades: Grades): Completion {
   const items = Object.values(rubric.items);
   return { done: items.filter((i) => i.key in grades).length, total: items.length };
+}
+
+export interface MustPassStatus {
+  ilo: IloId;
+  total: number;
+  max: number;
+  /** Fraction of the ILO's points achieved (0–1). */
+  pct: number;
+  /** True once the must-pass threshold is met (>= threshold). */
+  pass: boolean;
+}
+
+/** Per-ILO must-pass status for the must-pass ILOs (9.3 / 9.4 / 9.5). */
+export function mustPassStatuses(rubric: Rubric, grades: Grades): MustPassStatus[] {
+  return MUST_PASS_ILOS.map(({ ilo, threshold }) => {
+    const total = iloTotal(rubric, grades, ilo);
+    const max = iloMax(rubric, ilo);
+    const pct = max > 0 ? total / max : 0;
+    return { ilo, total, max, pct, pass: pct >= threshold };
+  });
 }

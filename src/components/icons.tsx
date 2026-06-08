@@ -63,3 +63,9 @@ export const Check = ({ size = 16 }: IconProps) => (
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );
+
+export const Chevron = ({ size = 16 }: IconProps) => (
+  <svg {...base(size)}>
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+);

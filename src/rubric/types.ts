@@ -5,7 +5,8 @@ export type TabId =
   | 'Diagrams'
   | 'Code'
   | 'Pipeline'
-  | 'Other';
+  | 'Other'
+  | 'Outstanding';
 
 export type IloId = '1' | '2' | '4' | '8' | '9.3' | '9.4' | '9.5' | '10';
 

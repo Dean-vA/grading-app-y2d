@@ -1,5 +1,5 @@
 import { rubric } from '../../rubric/rubric';
-import { tabCompletion, tabMax, tabTotal } from '../../rubric/selectors';
+import { overallCompletion, tabCompletion, tabMax, tabTotal } from '../../rubric/selectors';
 import type { Grades, TabId } from '../../rubric/types';
 import styles from './Tabs.module.css';
 
@@ -10,6 +10,9 @@ interface TabsProps {
 }
 
 export function Tabs({ active, grades, onSelect }: TabsProps) {
+  const overall = overallCompletion(rubric, grades);
+  const ungraded = overall.total - overall.done;
+
   return (
     <nav className={styles.nav} aria-label="Rubric sections">
       {rubric.tabs.map((tab) => {
@@ -35,6 +38,22 @@ export function Tabs({ active, grades, onSelect }: TabsProps) {
           </button>
         );
       })}
+
+      <button
+        type="button"
+        className={`${styles.tab} ${styles.outstandingTab} ${
+          active === 'Outstanding' ? styles.active : ''
+        }`}
+        aria-current={active === 'Outstanding' ? 'page' : undefined}
+        onClick={() => onSelect('Outstanding')}
+      >
+        <span className={styles.name}>★ Outstanding</span>
+        <span
+          className={`${styles.badge} ${ungraded === 0 ? styles.badgeDone : styles.badgeOutstanding}`}
+        >
+          {ungraded}
+        </span>
+      </button>
     </nav>
   );
 }

@@ -1,4 +1,4 @@
-import type { Rubric, RubricItem, RubricTab } from './types';
+import type { IloId, Rubric, RubricItem, RubricTab } from './types';
 
 /**
  * Full rubric, transcribed verbatim from the original single-file app.
@@ -11,48 +11,38 @@ const ITEMS: RubricItem[] = [
   /* ---------------------------- Deployment & DevOps (ILO 9.5) ---------------------------- */
   {
     key: 'ILO9_5_A',
-    label: 'Application Deployment (On-prem [portainer] and cloud)',
+    label: 'Containerised inference API deployed locally (Docker) & on-premise (Portainer): frontend + backend + inference',
     maxPoints: 5,
-    input: 'radio',
+    input: 'number',
     ilo: '9.5',
     tab: 'Deployment',
-    section: 'A: Deployed Application (5 Points)',
-    options: [
+    section: 'A: On-Premise Deployment (5 Points)',
+    requirement:
+      'Official 9.5 A: deploy an inference pipeline and interact with the deployed model locally and on on-premise infrastructure.\nCovers the inference API, Docker containerisation, local Docker run, and on-premise (Portainer) deployment (ILO 9.5A).\nOn-prem inference may run in-process in the backend or as a separate job runner — no dedicated inference endpoint is required on-prem.\nIf the application only runs on localhost (no on-premise/Portainer deployment), award a MAXIMUM of 2 points.',
+    criteriaLines: [
       {
-        points: 5,
         label: '5 points:',
-        description:
-          'Backend and frontend running on portainer (2pts) + Backend and frontend running on Azure (3pts)',
+        description: 'Frontend, backend and inference fully deployed and interactive on-premise (Portainer)',
         tone: 'good',
       },
       {
-        points: 3,
-        label: '3 points:',
-        description: 'Backend and frontend running on Azure and inference works',
+        label: '3–4 points:',
+        description: 'Partial on-premise deployment (e.g. backend + inference only, or missing pieces)',
         tone: 'warn',
       },
       {
-        points: 2,
-        label: '2 points:',
-        description:
-          'Backend and frontend running on portainer and inference works OR Backend running on Azure with FastAPI docs and inference works',
-        tone: 'warn',
-      },
-      {
-        points: 1,
-        label: '1 point:',
-        description:
-          'Backend running on portainer with FastAPI docs and inference works OR Only running locally (max 1 point)',
+        label: 'Max 2 points:',
+        description: 'Only running on localhost — no on-premise (Portainer) deployment',
         tone: 'bad',
       },
-      { points: 0, label: '0 points:', description: 'No working deployment', tone: 'neutral' },
+      { label: '0 points:', description: 'Nothing deployed', tone: 'neutral' },
     ],
-    commentPlaceholder: 'Comments on application deployment...',
+    commentPlaceholder: 'Comments on on-premise (Portainer) / local deployment...',
   },
   {
     key: 'ILO9_5_B_branching',
     label: 'Branching Strategy (Main protected, merge by pull requests)',
-    maxPoints: 2,
+    maxPoints: 1,
     input: 'number',
     ilo: '9.5',
     tab: 'Deployment',
@@ -71,71 +61,64 @@ const ITEMS: RubricItem[] = [
   },
   {
     key: 'ILO9_5_B_cicd_build',
-    label: 'CI/CD - Automated container build and push',
-    maxPoints: 1,
+    label: 'CI/CD - Automated container build & push + automated on-prem deploy (Portainer)',
+    maxPoints: 2,
     input: 'number',
     ilo: '9.5',
     tab: 'Deployment',
     section: 'B: GitHub Repository & DevOps (5 Points)',
-    commentPlaceholder: 'Comments on automated container builds...',
+    criteriaNote:
+      'Automated build & push to GHCR (1pt) + automated on-premise deployment via Portainer polling/webhooks (1pt).',
+    commentPlaceholder: 'Comments on automated container build/push and on-prem deployment...',
+  },
+  {
+    key: 'ILO9_5_C_cloud',
+    label: 'Cloud deployment (Azure): model served as endpoint / app on Container Apps, inference works',
+    maxPoints: 2,
+    input: 'number',
+    ilo: '9.5',
+    tab: 'Deployment',
+    section: 'C: Cloud Deployment & Model Versioning (5 Points)',
+    requirement: 'Cloud inference may use an Azure ML Endpoint or run within the Container App.',
+    criteriaLines: [
+      {
+        label: '2 points:',
+        description:
+          'Registered model served as a cloud endpoint and/or app deployed on Azure Container Apps, inference works',
+        tone: 'good',
+      },
+      {
+        label: '1 point:',
+        description: 'Partial cloud deployment (e.g. backend only with FastAPI docs)',
+        tone: 'warn',
+      },
+      { label: '0 points:', description: 'Nothing deployed to the cloud', tone: 'neutral' },
+    ],
+    commentPlaceholder: 'Comments on cloud (Azure) endpoint / Container Apps deployment...',
   },
   {
     key: 'ILO9_5_C',
-    label: 'Model Store Integration',
-    maxPoints: 3,
-    input: 'radio',
+    label: 'Model store integration & versioning (registered from training, version-controlled, loaded in app)',
+    maxPoints: 1,
+    input: 'number',
     ilo: '9.5',
     tab: 'Deployment',
-    section: 'C: Model Integration (5 Points)',
-    options: [
-      {
-        points: 3,
-        label: '3 points:',
-        description:
-          'Models properly registered in model store from training pipeline AND successfully downloaded/loaded in application',
-        tone: 'good',
-      },
-      {
-        points: 1,
-        label: '1 point:',
-        description: 'Either registration OR downloading works, but not the complete flow',
-        tone: 'warn',
-      },
-      { points: 0, label: '0 points:', description: 'No model store integration', tone: 'neutral' },
-    ],
-    commentPlaceholder:
-      'Comments on model store integration (registration from training + loading in application)...',
+    section: 'C: Cloud Deployment & Model Versioning (5 Points)',
+    criteriaNote:
+      'Models registered & version-controlled in the model store from the training pipeline AND a selected version loaded in the application.',
+    commentPlaceholder: 'Comments on model store integration and version control...',
   },
   {
-    key: 'ILO9_5_C_pipeline',
-    label: 'Training Pipeline Integration',
-    maxPoints: 2,
-    input: 'radio',
+    key: 'ILO9_5_C_cd',
+    label: 'CI/CD - Automated cloud deployment to Azure Container Apps (GitHub Actions OIDC)',
+    maxPoints: 1,
+    input: 'number',
     ilo: '9.5',
     tab: 'Deployment',
-    section: 'C: Model Integration (5 Points)',
-    options: [
-      {
-        points: 2,
-        label: '2 points:',
-        description:
-          'Clear integration between training pipeline outputs and application deployment (automated or well-documented process)',
-        tone: 'good',
-      },
-      {
-        points: 1,
-        label: '1 point:',
-        description: 'Manual process exists but requires significant intervention',
-        tone: 'warn',
-      },
-      {
-        points: 0,
-        label: '0 points:',
-        description: 'No clear integration between training and deployment',
-        tone: 'neutral',
-      },
-    ],
-    commentPlaceholder: 'Comments on training pipeline to deployment integration process...',
+    section: 'C: Cloud Deployment & Model Versioning (5 Points)',
+    criteriaNote:
+      'Automated, well-documented cloud deployment pipeline (e.g. GitHub Actions OIDC → Azure Container Apps).',
+    commentPlaceholder: 'Comments on automated cloud deployment (CD)...',
   },
   {
     key: 'ILO9_5_D_feedback',
@@ -144,7 +127,7 @@ const ITEMS: RubricItem[] = [
     input: 'number',
     ilo: '9.5',
     tab: 'Deployment',
-    section: 'D: Retraining Pipeline (4 Points)',
+    section: 'D: Retraining & Monitoring (5 Points)',
     commentPlaceholder: 'Comments on user feedback collection system...',
   },
   {
@@ -154,7 +137,7 @@ const ITEMS: RubricItem[] = [
     input: 'number',
     ilo: '9.5',
     tab: 'Deployment',
-    section: 'D: Retraining Pipeline (4 Points)',
+    section: 'D: Retraining & Monitoring (5 Points)',
     commentPlaceholder: 'Comments on data storage and pipeline integration...',
   },
   {
@@ -164,18 +147,30 @@ const ITEMS: RubricItem[] = [
     input: 'number',
     ilo: '9.5',
     tab: 'Deployment',
-    section: 'D: Retraining Pipeline (4 Points)',
+    section: 'D: Retraining & Monitoring (5 Points)',
     commentPlaceholder: 'Comments on automatic training job triggers...',
   },
   {
     key: 'ILO9_5_D_deploy',
-    label: 'New models automatically deployed',
+    label: 'New (retrained) models automatically evaluated and deployed',
     maxPoints: 1,
     input: 'number',
     ilo: '9.5',
     tab: 'Deployment',
-    section: 'D: Retraining Pipeline (4 Points)',
-    commentPlaceholder: 'Comments on automatic model deployment...',
+    section: 'D: Retraining & Monitoring (5 Points)',
+    commentPlaceholder: 'Comments on automatic model evaluation and deployment...',
+  },
+  {
+    key: 'ILO9_5_D_monitoring',
+    label: 'Monitoring solution: technical & business metrics on training and deployed models',
+    maxPoints: 1,
+    input: 'number',
+    ilo: '9.5',
+    tab: 'Deployment',
+    section: 'D: Retraining & Monitoring (5 Points)',
+    criteriaNote:
+      'A monitoring solution capturing technical (latency, errors, drift) AND business metrics. The stakeholder dashboard/visualisation is scored separately under ILO 10.',
+    commentPlaceholder: 'Comments on the monitoring solution (technical & business metrics)...',
   },
 
   /* ---------------------------- Frontend & Monitoring (ILO 10) ---------------------------- */
@@ -243,25 +238,26 @@ const ITEMS: RubricItem[] = [
       {
         points: 3,
         label: '3 points:',
-        description: 'Logs make sense, metrics are good, and MLFlow metrics are present',
+        description:
+          'Evidence of training both locally and in the cloud with comparable metrics; logs make sense, metrics are good, and MLFlow tracking is present',
         tone: 'good',
       },
       {
         points: 2,
         label: '2 points:',
         description:
-          'Performance metrics not very good, no MLFlow metrics, but everything runs successfully',
+          'Cloud training runs successfully but metrics are weak or MLFlow tracking is missing',
         tone: 'warn',
       },
       {
         points: 1,
         label: '1 point:',
-        description: 'Some evidence of successful local training with good performance metrics',
+        description: 'Only local training evidenced, or cloud training partially working',
         tone: 'bad',
       },
       { points: 0, label: '0 points:', description: 'No evidence of successful training', tone: 'neutral' },
     ],
-    commentPlaceholder: 'Comments on training job implementation...',
+    commentPlaceholder: 'Comments on training job implementation (local and cloud)...',
   },
   {
     key: 'ILO8_A_model',
@@ -327,7 +323,7 @@ const ITEMS: RubricItem[] = [
   },
   {
     key: 'ILO9_5_D_bluegreen',
-    label: 'Blue-green deployment implemented (from ILO 9.5 Section D)',
+    label: 'Blue-green deployment / deployment strategy (from ILO 9.5 Section C)',
     maxPoints: 1,
     input: 'number',
     ilo: '9.5',
@@ -346,7 +342,7 @@ const ITEMS: RubricItem[] = [
     tab: 'Diagrams',
     section: 'A: Architecture Diagrams and Plans (5 Points)',
     requirement:
-      'Required Components:\n• Package Plan\n• Cloud and On-Prem Architecture Diagrams\n• Roadmap and High-level plan\n\nAssessment: 1-5 points based on completeness and quality of all components',
+      'Required Components:\n• Package Plan\n• Cloud and On-Prem Architecture Diagrams\n• Roadmap and High-level plan\n\nApplies to all project options (Computer Vision, NLP, or Block C custom).\nAssessment: 1-5 points based on completeness and quality of all components',
     commentPlaceholder:
       'Comments on architecture diagrams, package plan, and roadmap completeness and quality...',
   },
@@ -366,14 +362,14 @@ const ITEMS: RubricItem[] = [
   /* ---------------------------- Code Quality & Documentation (ILO 9.3) ---------------------------- */
   {
     key: 'ILO9_3_A',
-    label: 'Code Quality Assessment',
+    label: 'Code Quality Assessment (incl. CLI for inference/training)',
     maxPoints: 5,
     input: 'number',
     ilo: '9.3',
     tab: 'Code',
     section: 'Code Quality (5 Points)',
     requirement:
-      'Check codebase for: Best practice, Modularity, Logging, Doc strings, PEP8 compliance, Pre-commits set up',
+      'Check codebase for: Best practice, Modularity, Logging, Doc strings, PEP8 compliance, Pre-commits set up, CLI for inference/training (ILO 9.3A)',
     commentPlaceholder: 'Comments on code quality assessment...',
   },
   {
@@ -438,7 +434,7 @@ const ITEMS: RubricItem[] = [
   /* ---------------------------- Data Pipelines (ILO 9.4) ---------------------------- */
   {
     key: 'ILO9_4_B_pipeline',
-    label: 'Working Airflow/AML pipeline',
+    label: 'Working data pipeline (Airflow, Azure ML Pipelines, or equivalent)',
     maxPoints: 7,
     input: 'radio',
     ilo: '9.4',
@@ -446,18 +442,20 @@ const ITEMS: RubricItem[] = [
     section: 'Data Pipeline (10 Points)',
     hasComment: false,
     requirement:
-      'Pipeline requirements:\n• Look at Airflow DAGs (all dark green)\n• Check data assets that they should create\n• Functioning data pipeline that processes raw data and registers data assets\n• Students should explain data flow, processing, and final data format',
+      'Pipeline requirements:\n• Look at Airflow DAGs (all dark green) OR the Azure ML pipeline graph (all steps completed)\n• Check the data assets the pipeline should create\n• Functioning data pipeline that processes raw data and registers versioned data assets\n• Students should explain data flow, processing, and final data format\n\nNote: Airflow, Azure ML Pipelines, and equivalent industry-standard tools score equally — judge on the working pipeline, not the tool.',
     options: [
       {
         points: 7,
         label: '7 points:',
-        description: 'Working Airflow pipeline that downloads data and registers assets',
+        description:
+          'Working pipeline (Airflow, Azure ML Pipelines, or equivalent) that ingests data and registers versioned data assets',
         tone: 'good',
       },
       {
         points: 4,
         label: 'Max 4 points:',
-        description: 'No Airflow but working AML pipeline',
+        description:
+          'Partial pipeline — runs but is missing asset registration or some required processing steps',
         tone: 'warn',
       },
       { points: 0, label: '0 points:', description: 'No working pipeline', tone: 'neutral' },
@@ -484,15 +482,39 @@ const TABS: RubricTab[] = [
     overallCommentKey: 'Deployment_Overall',
     overallCommentPlaceholder: 'Overall comments on deployment and DevOps implementation...',
     sections: [
-      { title: 'A: Deployed Application (5 Points)', items: ['ILO9_5_A'] },
+      {
+        title: 'A: On-Premise Deployment (5 Points)',
+        intro:
+          'On-premise (Portainer) deployment — local & on-prem only. Cloud deployment is scored under section C. Localhost-only is capped at 2 points.',
+        items: ['ILO9_5_A'],
+      },
       {
         title: 'B: GitHub Repository & DevOps (5 Points)',
+        intro:
+          'Branching + CI/CD automation, including automated on-premise deployment (Portainer). Cloud CD is scored under section C.',
         items: ['ILO9_5_B_branching', 'ILO9_5_B_cicd_testing', 'ILO9_5_B_cicd_build'],
       },
-      { title: 'C: Model Integration (5 Points)', items: ['ILO9_5_C', 'ILO9_5_C_pipeline'] },
       {
-        title: 'D: Retraining Pipeline (4 Points)',
-        items: ['ILO9_5_D_feedback', 'ILO9_5_D_data', 'ILO9_5_D_trigger', 'ILO9_5_D_deploy'],
+        title: 'C: Cloud Deployment & Model Versioning (5 Points)',
+        alert: {
+          tone: 'info',
+          text: 'Blue-green / deployment strategy (the 5th point of section C) is assessed in the Azure ML tab with workspace artifacts.',
+        },
+        items: ['ILO9_5_C_cloud', 'ILO9_5_C', 'ILO9_5_C_cd'],
+      },
+      {
+        title: 'D: Retraining & Monitoring (5 Points)',
+        alert: {
+          tone: 'info',
+          text: 'Monitoring here scores the monitoring SOLUTION (technical & business metrics). The stakeholder dashboard/visualisation is scored separately under ILO 10.',
+        },
+        items: [
+          'ILO9_5_D_feedback',
+          'ILO9_5_D_data',
+          'ILO9_5_D_trigger',
+          'ILO9_5_D_deploy',
+          'ILO9_5_D_monitoring',
+        ],
       },
     ],
   },
@@ -504,7 +526,14 @@ const TABS: RubricTab[] = [
     overallCommentKey: 'Frontend_Overall',
     overallCommentPlaceholder: 'Overall comments on monitoring dashboard and frontend...',
     sections: [
-      { title: 'Monitoring Dashboard (4 Points)', items: ['ILO10_A_latency', 'ILO10_A_confidence'] },
+      {
+        title: 'Monitoring Dashboard (4 Points)',
+        alert: {
+          tone: 'info',
+          text: 'Monitoring need only be implemented in one environment (on-prem OR Azure) — do not penalise teams for not doing both.',
+        },
+        items: ['ILO10_A_latency', 'ILO10_A_confidence'],
+      },
       {
         title: 'Frontend Quality (6 Points)',
         intro: 'Assess: Style, Functionality, Features, Visualizations (max 4pts if no visualizations)',
@@ -538,7 +567,7 @@ const TABS: RubricTab[] = [
         title: 'Blue-Green Deployment Assessment (1 Point)',
         alert: {
           tone: 'info',
-          text: 'Note: This point is part of ILO 9.5 Section D but should be assessed with Azure ML workspace artifacts.',
+          text: 'Note: This point is part of ILO 9.5 Section C (deployment strategy) but should be assessed with Azure ML workspace artifacts.',
         },
         items: ['ILO9_5_D_bluegreen'],
       },
@@ -620,3 +649,14 @@ export const rubric: Rubric = {
   tabs: TABS,
   items: itemsRecord,
 };
+
+/**
+ * Must-pass ILOs (Y2D 2026): students must score at least `threshold` of the ILO's points,
+ * individually, to pass the block — regardless of their total. ILO 9 (50 of 100 points) is
+ * weighted accordingly. Evaluated against the app's scored denominators (9.3=15, 9.4=15, 9.5=20).
+ */
+export const MUST_PASS_ILOS: { ilo: IloId; threshold: number }[] = [
+  { ilo: '9.3', threshold: 0.55 },
+  { ilo: '9.4', threshold: 0.55 },
+  { ilo: '9.5', threshold: 0.55 },
+];

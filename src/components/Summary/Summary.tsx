@@ -1,5 +1,13 @@
 import { rubric } from '../../rubric/rubric';
-import { grandMax, grandTotal, iloMax, iloTotal, tabMax, tabTotal } from '../../rubric/selectors';
+import {
+  grandMax,
+  grandTotal,
+  iloMax,
+  iloTotal,
+  mustPassStatuses,
+  tabMax,
+  tabTotal,
+} from '../../rubric/selectors';
 import type { Grades } from '../../rubric/types';
 import styles from './Summary.module.css';
 
@@ -10,6 +18,8 @@ interface SummaryProps {
 export function Summary({ grades }: SummaryProps) {
   const g = (key: string) => grades[key] ?? 0;
   const scoredTabs = rubric.tabs.filter((t) => t.scored);
+  const mustPass = mustPassStatuses(rubric, grades);
+  const anyAtRisk = mustPass.some((m) => !m.pass);
 
   const iloCards: { title: string; lines: string[] }[] = [
     {
@@ -59,20 +69,31 @@ export function Summary({ grades }: SummaryProps) {
     {
       title: `ILO 9.5 (${iloTotal(rubric, grades, '9.5')}/${iloMax(rubric, '9.5')})`,
       lines: [
-        `A: Deployed Application (${g('ILO9_5_A')}/5)`,
+        `A: On-Premise Deployment (${g('ILO9_5_A')}/5)`,
         `B: GitHub & DevOps (${
           g('ILO9_5_B_branching') + g('ILO9_5_B_cicd_testing') + g('ILO9_5_B_cicd_build')
         }/5)`,
-        `• Branching (${g('ILO9_5_B_branching')}/2)`,
+        `• Branching (${g('ILO9_5_B_branching')}/1)`,
         `• CI/CD Testing (${g('ILO9_5_B_cicd_testing')}/2)`,
-        `• CI/CD Build (${g('ILO9_5_B_cicd_build')}/1)`,
-        `C: Model Integration (${g('ILO9_5_C') + g('ILO9_5_C_pipeline')}/5)`,
-        `• Model Store (${g('ILO9_5_C')}/3)`,
-        `• Pipeline Integration (${g('ILO9_5_C_pipeline')}/2)`,
-        `D: Retraining Pipeline (${
+        `• CI/CD Build + On-prem Deploy (${g('ILO9_5_B_cicd_build')}/2)`,
+        `C: Cloud Deployment & Versioning (${
+          g('ILO9_5_C_cloud') + g('ILO9_5_C') + g('ILO9_5_C_cd') + g('ILO9_5_D_bluegreen')
+        }/5)`,
+        `• Cloud Deploy (${g('ILO9_5_C_cloud')}/2)`,
+        `• Model Store & Versioning (${g('ILO9_5_C')}/1)`,
+        `• Cloud CD (${g('ILO9_5_C_cd')}/1)`,
+        `• Blue-Green (${g('ILO9_5_D_bluegreen')}/1) — assessed in Azure ML tab`,
+        `D: Retraining & Monitoring (${
+          g('ILO9_5_D_feedback') +
+          g('ILO9_5_D_data') +
+          g('ILO9_5_D_trigger') +
+          g('ILO9_5_D_deploy') +
+          g('ILO9_5_D_monitoring')
+        }/5)`,
+        `• Retraining (${
           g('ILO9_5_D_feedback') + g('ILO9_5_D_data') + g('ILO9_5_D_trigger') + g('ILO9_5_D_deploy')
         }/4)`,
-        `D: Blue-Green (${g('ILO9_5_D_bluegreen')}/1) — assessed in Azure ML tab`,
+        `• Monitoring Solution (${g('ILO9_5_D_monitoring')}/1)`,
       ],
     },
     {
@@ -107,6 +128,25 @@ export function Summary({ grades }: SummaryProps) {
 
       <div className={styles.totalRow}>
         Total: {grandTotal(rubric, grades)} / {grandMax(rubric)} points
+      </div>
+
+      <div className={`${styles.mustPass} ${anyAtRisk ? styles.mustPassWarn : ''}`}>
+        <div className={styles.mustPassHeading}>
+          Must-pass requirements (≥55% each — fail any and the block is not passed)
+        </div>
+        <div className={styles.mustPassGrid}>
+          {mustPass.map((m) => (
+            <div key={m.ilo} className={styles.mustPassRow}>
+              <span className={styles.mustPassIlo}>ILO {m.ilo}</span>
+              <span className={styles.mustPassScore}>
+                {m.total}/{m.max} ({Math.round(m.pct * 100)}%)
+              </span>
+              <span className={`${styles.mustPassBadge} ${m.pass ? styles.pass : styles.fail}`}>
+                {m.pass ? 'PASS' : 'AT RISK'}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className={styles.breakdown}>
