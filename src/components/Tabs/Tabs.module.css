@@ -65,3 +65,12 @@
   background: var(--tone-good-bg);
   color: var(--tone-good);
 }
+
+.outstandingTab {
+  margin-left: auto;
+}
+
+.badgeOutstanding {
+  background: var(--warn-bg);
+  color: var(--warn-text);
+}

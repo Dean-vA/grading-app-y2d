@@ -14,6 +14,7 @@ interface HeaderProps {
   dirtySinceExport: boolean;
   onGroupNameChange: (name: string) => void;
   onExport: () => void;
+  onExportExcel: () => void;
   onImportFile: (file: File) => void;
   onClear: () => void;
 }
@@ -28,6 +29,7 @@ export function Header({
   dirtySinceExport,
   onGroupNameChange,
   onExport,
+  onExportExcel,
   onImportFile,
   onClear,
 }: HeaderProps) {
@@ -82,6 +84,21 @@ export function Header({
         >
           <Download size={16} />
           <span>Export JSON</span>
+        </button>
+
+        <button
+          type="button"
+          className={`${styles.btn} ${styles.excel}`}
+          onClick={onExportExcel}
+          disabled={!groupName.trim()}
+          title={
+            !groupName.trim()
+              ? 'Enter a group name first'
+              : 'Export as the official Y2D 2026 rubric (.xlsx)'
+          }
+        >
+          <Download size={16} />
+          <span>Export Excel</span>
         </button>
 
         <button

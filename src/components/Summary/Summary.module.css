@@ -55,6 +55,80 @@
   color: var(--accent);
 }
 
+.mustPass {
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--tone-good);
+  border-radius: var(--radius);
+}
+
+.mustPassWarn {
+  border-color: var(--warn-border);
+  border-left-color: var(--tone-bad);
+  background: var(--warn-bg);
+}
+
+.mustPassHeading {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-2);
+}
+
+.mustPassWarn .mustPassHeading {
+  color: var(--warn-text);
+}
+
+.mustPassGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+
+@media (min-width: 560px) {
+  .mustPassGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.mustPassRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.mustPassIlo {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.mustPassScore {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.mustPassBadge {
+  margin-left: auto;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.mustPassBadge.pass {
+  color: var(--tone-good);
+  background: var(--tone-good-bg);
+}
+
+.mustPassBadge.fail {
+  color: var(--tone-bad);
+  background: var(--tone-bad-bg);
+}
+
 .breakdown {
   margin-top: var(--space-5);
   padding-top: var(--space-5);

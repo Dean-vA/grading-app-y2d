@@ -4,6 +4,7 @@ import {
   grandTotal,
   iloMax,
   iloTotal,
+  mustPassStatuses,
   tabTotal,
 } from '../rubric/selectors';
 import type { Comments, Grades } from '../rubric/types';
@@ -27,10 +28,21 @@ export function buildExport({ groupName, grades, comments }: ExportPayload) {
     if (tab.scored) artifactSummary[tab.name] = tabTotal(rubric, grades, tab.id);
   }
 
+  const mustPass: Record<string, { score: string; percent: number; pass: boolean }> = {};
+  for (const m of mustPassStatuses(rubric, grades)) {
+    mustPass[`ILO ${m.ilo}`] = {
+      score: `${m.total}/${m.max}`,
+      percent: Math.round(m.pct * 100),
+      pass: m.pass,
+    };
+  }
+
   return {
     groupName: groupName.trim(),
     exportDate: new Date().toISOString(),
     totalPoints: grandTotal(rubric, grades),
+
+    mustPass,
 
     artifactSummary,
 
@@ -95,28 +107,35 @@ export function buildExport({ groupName, grades, comments }: ExportPayload) {
       'ILO 9.5': {
         total: iloTotalStr('9.5'),
         sections: {
-          'A: Deployed Application': `${g(grades, 'ILO9_5_A')}/5`,
+          'A: On-Premise Deployment': `${g(grades, 'ILO9_5_A')}/5`,
           'B: GitHub & DevOps': `${
             g(grades, 'ILO9_5_B_branching') +
             g(grades, 'ILO9_5_B_cicd_testing') +
             g(grades, 'ILO9_5_B_cicd_build')
           }/5`,
-          'C: Model Integration': `${g(grades, 'ILO9_5_C') + g(grades, 'ILO9_5_C_pipeline')}/5`,
-          'D: Retraining Pipeline': `${
+          'C: Cloud Deployment & Versioning': `${
+            g(grades, 'ILO9_5_C_cloud') +
+            g(grades, 'ILO9_5_C') +
+            g(grades, 'ILO9_5_C_cd') +
+            g(grades, 'ILO9_5_D_bluegreen')
+          }/5`,
+          'D: Retraining & Monitoring': `${
             g(grades, 'ILO9_5_D_feedback') +
             g(grades, 'ILO9_5_D_data') +
             g(grades, 'ILO9_5_D_trigger') +
-            g(grades, 'ILO9_5_D_deploy')
-          }/4`,
-          'D: Blue-Green Deployment': `${g(grades, 'ILO9_5_D_bluegreen')}/1`,
+            g(grades, 'ILO9_5_D_deploy') +
+            g(grades, 'ILO9_5_D_monitoring')
+          }/5`,
         },
         comments: {
-          Deployment: c(comments, 'ILO9_5_A'),
+          'On-prem Deployment': c(comments, 'ILO9_5_A'),
           DevOps: c(comments, 'ILO9_5_B_branching'),
-          'Model Integration': c(comments, 'ILO9_5_C'),
-          'Pipeline Integration': c(comments, 'ILO9_5_C_pipeline'),
-          Retraining: c(comments, 'ILO9_5_D_feedback'),
+          'Cloud Deployment': c(comments, 'ILO9_5_C_cloud'),
+          'Model Versioning': c(comments, 'ILO9_5_C'),
+          'Cloud CD': c(comments, 'ILO9_5_C_cd'),
           'Blue-Green': c(comments, 'ILO9_5_D_bluegreen'),
+          Retraining: c(comments, 'ILO9_5_D_feedback'),
+          Monitoring: c(comments, 'ILO9_5_D_monitoring'),
           Overall: c(comments, 'Deployment_Overall'),
         },
       },
