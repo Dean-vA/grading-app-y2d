@@ -37,12 +37,12 @@ export function Summary({ grades }: SummaryProps) {
         `• Training Success (${g('ILO8_A_training')}/3)`,
         `• Model Registration (${g('ILO8_A_model')}/1)`,
         `B: Advanced Features (${
-          g('ILO8_B_pipeline') + g('ILO8_B_mlflow') + g('ILO8_B_scheduled') + g('ILO8_B_retraining')
+          g('ILO8_B_pipeline') + g('ILO8_B_mlflow') + g('ILO8_B_scheduled') + g('ILO8_B_conditional')
         }/6)`,
         `• Pipeline/Tuning (${g('ILO8_B_pipeline')}/3)`,
-        `• MLFlow Metrics (${g('ILO8_B_mlflow')}/1)`,
-        `• Scheduling (${g('ILO8_B_scheduled')}/1)`,
-        `• Auto-retraining (${g('ILO8_B_retraining')}/1)`,
+        `• Experiment Tracking (${g('ILO8_B_mlflow')}/1)`,
+        `• Scheduling/Trigger (${g('ILO8_B_scheduled')}/1)`,
+        `• Conditional Registration (${g('ILO8_B_conditional')}/1)`,
       ],
     },
     {
@@ -61,9 +61,10 @@ export function Summary({ grades }: SummaryProps) {
         `A: Data Storage (${g('ILO9_4_A_raw') + g('ILO9_4_A_processed')}/5)`,
         `• Raw Data (${g('ILO9_4_A_raw')}/2)`,
         `• Processed Data (${g('ILO9_4_A_processed')}/3)`,
-        `B: Pipeline (${g('ILO9_4_B_pipeline') + g('ILO9_4_B_scheduled')}/10)`,
-        `• Working Pipeline (${g('ILO9_4_B_pipeline')}/7)`,
-        `• Scheduling (${g('ILO9_4_B_scheduled')}/3)`,
+        `B: Pipeline (${g('ILO9_4_B_onprem') + g('ILO9_4_B_cloud') + g('ILO9_4_B_scheduled')}/10)`,
+        `• On-prem Pipeline / Airflow (${g('ILO9_4_B_onprem')}/4)`,
+        `• Cloud Pipeline (${g('ILO9_4_B_cloud')}/4)`,
+        `• Scheduling/Trigger (${g('ILO9_4_B_scheduled')}/2)`,
       ],
     },
     {

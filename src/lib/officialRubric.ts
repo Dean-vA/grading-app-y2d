@@ -162,7 +162,7 @@ export const OFFICIAL_RUBRIC: OfficialIlo[] = [
           'ILO8_B_pipeline',
           'ILO8_B_mlflow',
           'ILO8_B_scheduled',
-          'ILO8_B_retraining',
+          'ILO8_B_conditional',
           'AzureML_Overall',
         ],
         components: [
@@ -182,7 +182,7 @@ export const OFFICIAL_RUBRIC: OfficialIlo[] = [
               g(gr, 'ILO8_B_pipeline') +
               g(gr, 'ILO8_B_mlflow') +
               g(gr, 'ILO8_B_scheduled') +
-              g(gr, 'ILO8_B_retraining'),
+              g(gr, 'ILO8_B_conditional'),
           },
         ],
       },
@@ -235,7 +235,8 @@ export const OFFICIAL_RUBRIC: OfficialIlo[] = [
         commentKeys: [
           'ILO9_4_A_raw',
           'ILO9_4_A_processed',
-          'ILO9_4_B_pipeline',
+          'ILO9_4_B_onprem',
+          'ILO9_4_B_cloud',
           'ILO9_4_B_scheduled',
           'Pipeline_Overall',
         ],
@@ -252,7 +253,8 @@ export const OFFICIAL_RUBRIC: OfficialIlo[] = [
             text:
               'The student is able to convert data preprocessing/processing code into a data pipeline. The group is able to perform all required data preprocessing and processing steps in data pipelines using industry standard tools. The data pipelines are run on a schedule or triggered automatically based on appropriate criteria.',
             max: 10,
-            score: (gr) => g(gr, 'ILO9_4_B_pipeline') + g(gr, 'ILO9_4_B_scheduled'),
+            score: (gr) =>
+              g(gr, 'ILO9_4_B_onprem') + g(gr, 'ILO9_4_B_cloud') + g(gr, 'ILO9_4_B_scheduled'),
           },
         ],
       },

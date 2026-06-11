@@ -20,7 +20,7 @@ const FOCUS_KEY = 'demo-grading-focus-ungraded';
 export default function App() {
   const grading = useGrading();
   const { notify } = useToast();
-  const [activeTab, setActiveTab] = useState<TabId>('Deployment');
+  const [activeTab, setActiveTab] = useState<TabId>('Frontend');
   const [confirmClear, setConfirmClear] = useState(false);
 
   // Focus on outstanding items: a global "show only ungraded" filter,
@@ -35,6 +35,9 @@ export default function App() {
   });
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [snapshot, setSnapshot] = useState<Set<string> | null>(null);
+  // Section currently containing keyboard focus — auto-collapse is held off until the
+  // user clicks/tabs away, so a section never folds up mid-typing.
+  const [focusWithin, setFocusWithin] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -98,13 +101,20 @@ export default function App() {
     const allKeys = section.items.filter((k) => rubric.items[k]);
     const totalItems = allKeys.length;
     const doneItems = allKeys.filter(isGraded).length;
+    // An item only counts towards auto-collapse once it has BOTH a grade and a comment
+    // (items without a comment box only need the grade).
+    const fullyDone = (k: string) =>
+      isGraded(k) &&
+      (rubric.items[k]!.hasComment === false || (grading.comments[k] ?? '').trim() !== '');
 
     const visibleKeys =
       focusUngraded && snapshot ? allKeys.filter((k) => snapshot.has(k)) : allKeys;
     if (focusUngraded && visibleKeys.length === 0) return null;
 
     const key = `${tab.id}::${section.title ?? idx}`;
-    const autoCollapsed = totalItems > 0 && doneItems === totalItems;
+    // Hold off auto-collapse while the user is still focused inside this section;
+    // it folds up only once they click/tab away.
+    const autoCollapsed = totalItems > 0 && allKeys.every(fullyDone) && focusWithin !== key;
     const isCollapsed = focusUngraded ? false : (collapsed[key] ?? autoCollapsed);
     const complete = totalItems > 0 && doneItems === totalItems;
 
@@ -115,7 +125,16 @@ export default function App() {
     );
 
     return (
-      <div key={key} className={styles.section}>
+      <div
+        key={key}
+        className={styles.section}
+        onFocusCapture={() => setFocusWithin(key)}
+        onBlurCapture={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+            setFocusWithin((cur) => (cur === key ? null : cur));
+          }
+        }}
+      >
         {section.title &&
           (focusUngraded ? (
             <h3 className={styles.sectionTitle}>
