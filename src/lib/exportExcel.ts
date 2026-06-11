@@ -36,12 +36,12 @@ export const COMPONENT_COMMENTS: Record<string, string[][]> = {
   '4.4': [['ILO4_A', 'Diagrams_Overall'], ['ILO4_B', 'ILO4_C_GPU']],
   '8.9': [
     ['ILO8_A_training', 'ILO8_A_model', 'AzureML_Overall'],
-    ['ILO8_B_pipeline', 'ILO8_B_mlflow', 'ILO8_B_scheduled', 'ILO8_B_retraining'],
+    ['ILO8_B_pipeline', 'ILO8_B_mlflow', 'ILO8_B_scheduled', 'ILO8_B_conditional'],
   ],
   '9.3': [['ILO9_3_A', 'Code_Overall'], ['ILO9_3_B_docs', 'ILO9_3_B_readme'], ['ILO9_3_C']],
   '9.4': [
     ['ILO9_4_A_raw', 'ILO9_4_A_processed', 'Pipeline_Overall'],
-    ['ILO9_4_B_pipeline', 'ILO9_4_B_scheduled'],
+    ['ILO9_4_B_onprem', 'ILO9_4_B_cloud', 'ILO9_4_B_scheduled'],
   ],
   '9.5': [
     ['ILO9_5_A', 'Deployment_Overall'],

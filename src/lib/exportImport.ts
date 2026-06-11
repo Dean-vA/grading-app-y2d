@@ -69,7 +69,7 @@ export function buildExport({ groupName, grades, comments }: ExportPayload) {
             g(grades, 'ILO8_B_pipeline') +
             g(grades, 'ILO8_B_mlflow') +
             g(grades, 'ILO8_B_scheduled') +
-            g(grades, 'ILO8_B_retraining')
+            g(grades, 'ILO8_B_conditional')
           }/6`,
         },
         comments: {
@@ -96,11 +96,17 @@ export function buildExport({ groupName, grades, comments }: ExportPayload) {
         total: iloTotalStr('9.4'),
         sections: {
           'A: Data Storage': `${g(grades, 'ILO9_4_A_raw') + g(grades, 'ILO9_4_A_processed')}/5`,
-          'B: Pipeline': `${g(grades, 'ILO9_4_B_pipeline') + g(grades, 'ILO9_4_B_scheduled')}/10`,
+          'B: Pipeline': `${
+            g(grades, 'ILO9_4_B_onprem') + g(grades, 'ILO9_4_B_cloud') + g(grades, 'ILO9_4_B_scheduled')
+          }/10`,
+          'B: On-prem Pipeline (Airflow)': `${g(grades, 'ILO9_4_B_onprem')}/4`,
+          'B: Cloud Pipeline': `${g(grades, 'ILO9_4_B_cloud')}/4`,
+          'B: Scheduling/Trigger': `${g(grades, 'ILO9_4_B_scheduled')}/2`,
         },
         comments: {
           'Data Storage': c(comments, 'ILO9_4_A_raw'),
-          Pipeline: c(comments, 'ILO9_4_B_pipeline'),
+          'On-prem Pipeline': c(comments, 'ILO9_4_B_onprem'),
+          'Cloud Pipeline': c(comments, 'ILO9_4_B_cloud'),
           Overall: c(comments, 'Pipeline_Overall'),
         },
       },
